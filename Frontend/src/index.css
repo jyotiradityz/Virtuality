@@ -1,0 +1,167 @@
+@import "tailwindcss";
+
+
+@theme {
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-background: var(--color-background);
+  --color-surface: var(--color-surface);
+  --color-text: var(--color-text);
+  --color-accent: var(--color-accent);
+}
+
+@layer base {
+
+  /* Default Platform Theme (Modern Dark/Glassmorphism) */
+  :root {
+    --color-primary: #6366f1;
+    /* Indigo */
+    --color-secondary: #8b5cf6;
+    /* Violet */
+    --color-background: #090d16;
+    /* Deep Dark Space */
+    --color-surface: rgba(17, 24, 39, 0.6);
+    /* Translucent dark */
+    --color-text: #f8fafc;
+    /* Slate 50 */
+    --color-accent: #00f2fe;
+    /* Neon Cyan */
+  }
+
+  .theme-hexo {
+    --color-primary: #78350f;
+    /* Burnt Amber / Leather Brown */
+    --color-secondary: #b45309;
+    /* Saddle Orange-Brown */
+    --color-background: #f7f2ea;
+    /* Vintage Parchment / Sand */
+    --color-surface: rgba(235, 222, 206, 0.8);
+    /* Warm Paper glass */
+    --color-text: #27160c;
+    /* Charcoal Brown */
+    --color-accent: #451a03;
+    /* Deep Espresso */
+  }
+
+  /* Mafia Theme (Dark/Gritty/Noir/Neon Red) */
+  .theme-mafia {
+    --color-primary: #e11d48;
+    /* Crimson Rose 600 */
+    --color-secondary: #9f1239;
+    /* Dark Blood Rose 800 */
+    --color-background: #030303;
+    /* Pure Black */
+    --color-surface: rgba(17, 17, 17, 0.7);
+    /* Gritty charcoal glass */
+    --color-text: #e5e5e5;
+    /* Neutral Light */
+    --color-accent: #f43f5e;
+    /* Rose Neon */
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    transition: background-color 0.7s ease-in-out, color 0.7s ease-in-out;
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Custom styles for glowing details */
+.glow-primary {
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.35);
+}
+
+.glow-accent {
+  box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: var(--color-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.theme-hexo .glass {
+  border: 1px solid rgba(234, 88, 12, 0.15);
+}
+
+.theme-mafia .glass {
+  border: 1px solid rgba(225, 29, 72, 0.15);
+}
+
+/* Animated Multi-color border gradient representing Cowboy / Wooden themes */
+@keyframes border-glow-catan {
+  0% {
+    border-color: #78350f;
+  }
+
+  /* Burnt Amber */
+  25% {
+    border-color: #b45309;
+  }
+
+  /* Saddle Orange */
+  50% {
+    border-color: #451a03;
+  }
+
+  /* Espresso */
+  75% {
+    border-color: #d97706;
+  }
+
+  /* Brass / Gold */
+  100% {
+    border-color: #5c3a21;
+  }
+
+  /* Dark wood */
+}
+
+.catan-border {
+  animation: border-glow-catan 10s infinite alternate ease-in-out;
+}
+
+/* Wood-grained or Board-game feel card border */
+.board-game-panel {
+  border: 6px solid #b45309;
+  /* Amber 700 Wood-brown */
+  box-shadow: inset 0 0 30px rgba(180, 83, 9, 0.12), 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Resource specific glowing cards */
+.glow-wood {
+  box-shadow: 0 0 20px rgba(21, 128, 61, 0.3);
+}
+
+.glow-sheep {
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+.glow-brick {
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+}
+
+.glow-wheat {
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+}
+
+.glow-ore {
+  box-shadow: 0 0 20px rgba(100, 116, 139, 0.3);
+}
+
+/* Full screen overlay border */
+.catan-screen-border {
+  position: fixed;
+  inset: 0;
+  border: 10px solid #15803d;
+  /* Wood default */
+  pointer-events: none;
+  z-index: 9999;
+  animation: border-glow-catan 8s infinite alternate ease-in-out;
+}
