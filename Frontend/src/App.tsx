@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Hexo from './pages/Hexo'
 import HexoLobby from './pages/HexoLobby'
+import HexoGame from './pages/HexoGame'
+import CoupGame from './pages/CoupGame'
 
 function App() {
   return (
@@ -10,6 +12,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/hexo" element={<Hexo />} />
         <Route path="/hexo/:lobbyCode" element={<HexoLobby />} />
+        <Route path="/hexo/:lobbyCode/game" element={<HexoGame />} />
+        <Route path="/coup" element={<CoupGame />} />
         <Route path="/mafia" element={
           <div className="min-h-screen theme-mafia bg-[var(--color-background)] text-[var(--color-text)] flex flex-col items-center justify-center px-4">
             <div className="absolute inset-0 bg-radial from-red-950/20 via-black to-black -z-10" />

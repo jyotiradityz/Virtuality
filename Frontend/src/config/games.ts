@@ -32,5 +32,16 @@ export const GAMES: GameConfig[] = [
     tagline: 'Trust No One',
     minPlayers: 5,
     maxPlayers: 20,
+  },
+  {
+    id: 'coup',
+    name: 'Coup',
+    path: '/coup',
+    description: 'A game of bluffing, deception, and influence. Claim roles you do not have to seize power, but beware of the challenge.',
+    themeClass: 'theme-coup',
+    accentColor: 'from-green-600 to-emerald-900',
+    tagline: 'Bluff, Betray, Rule',
+    minPlayers: 2,
+    maxPlayers: 6,
   }
 ];

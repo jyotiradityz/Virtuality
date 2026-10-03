@@ -1,0 +1,434 @@
+/* ═══════════════════════════════════════════════
+   COUP - Heavy Cream White Neumorphic Interface
+   Soft UI / Cream & Gold Aesthetics
+   ═══════════════════════════════════════════════ */
+
+:root {
+  /* Cream Neumorphic Palette */
+  --neu-bg: #ece7dc;             /* Main Warm Cream Background */
+  --neu-surface: #ece7dc;        /* Base Surface Color */
+  --neu-surface-light: #f7f3ea;  /* Top-left Highlight Gradient */
+  --neu-surface-dark: #dfd9cb;   /* Bottom-right Shadow Gradient */
+
+  /* Dual Shadows for #ece7dc */
+  --neu-shadow-dark: #c5bca9;    /* Soft Warm Shadow */
+  --neu-shadow-light: #ffffff;   /* Pure White Highlight */
+
+  /* Typography */
+  --text-primary: #2d2822;       /* Rich Dark Espresso Brown */
+  --text-secondary: #706758;     /* Soft Taupe */
+  --text-muted: #9e9483;         /* Light Muted Taupe */
+
+  /* Gold & Accents */
+  --gold: #d97706;
+  --gold-light: #f59e0b;
+  --gold-dark: #b45309;
+  --gold-glow: rgba(217, 119, 6, 0.25);
+
+  /* Role Badges */
+  --role-duke: #7c3aed;
+  --role-assassin: #dc2626;
+  --role-captain: #0284c7;
+  --role-ambassador: #059669;
+  --role-contessa: #db2777;
+
+  /* Table Surface */
+  --table-bg: #e5ded0;
+  --table-felt: #dfd7c6;
+  --table-rim: #c9bea9;
+  --table-border: #b3a790;
+}
+
+/* ─── Global Background Overrides ─── */
+body, #root {
+  background-color: var(--neu-bg) !important;
+  color: var(--text-primary);
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+}
+
+/* ─── Neumorphic Base Classes ─── */
+.neu-flat {
+  background: var(--neu-surface);
+  box-shadow:
+    8px 8px 16px var(--neu-shadow-dark),
+    -8px -8px 16px var(--neu-shadow-light);
+  border-radius: 20px;
+}
+
+.neu-convex {
+  background: linear-gradient(145deg, var(--neu-surface-light), var(--neu-surface-dark));
+  box-shadow:
+    8px 8px 18px var(--neu-shadow-dark),
+    -8px -8px 18px var(--neu-shadow-light);
+  border-radius: 20px;
+}
+
+.neu-concave {
+  background: linear-gradient(145deg, var(--neu-surface-dark), var(--neu-surface-light));
+  box-shadow:
+    inset 6px 6px 12px var(--neu-shadow-dark),
+    inset -6px -6px 12px var(--neu-shadow-light);
+  border-radius: 20px;
+}
+
+.neu-pressed {
+  background: var(--neu-surface);
+  box-shadow:
+    inset 6px 6px 12px var(--neu-shadow-dark),
+    inset -6px -6px 12px var(--neu-shadow-light);
+  border-radius: 16px;
+}
+
+/* Extruded Neumorphic Card / Container */
+.neu-card {
+  background: linear-gradient(145deg, #f7f3ea, #e2dccf);
+  box-shadow:
+    10px 10px 20px var(--neu-shadow-dark),
+    -10px -10px 20px var(--neu-shadow-light);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+/* ─── 3D Table Perspective ─── */
+.coup-table-container {
+  perspective: 1600px;
+  perspective-origin: 50% 55%;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 45%, #f4f0e6 0%, #ece7dc 60%, #e0d9ca 100%);
+}
+
+.coup-table-surface {
+  transform-style: preserve-3d;
+  transform: rotateX(16deg) scale(0.96);
+  transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.coup-table-felt {
+  background: linear-gradient(145deg, #e9e3d5, #dbd4c4);
+  border: 8px solid var(--table-rim);
+  border-radius: 140px;
+  box-shadow:
+    16px 16px 36px var(--neu-shadow-dark),
+    -16px -16px 36px var(--neu-shadow-light),
+    inset 8px 8px 18px rgba(181, 171, 150, 0.4),
+    inset -8px -8px 18px rgba(255, 255, 255, 0.8);
+}
+
+/* Cream felt texture */
+.coup-table-felt::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8ad96' fill-opacity='0.12'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* ─── Card 3D Flip System ─── */
+.card-3d-container {
+  perspective: 800px;
+  transform-style: preserve-3d;
+}
+
+.card-3d-inner {
+  transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+.card-3d-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+/* ─── Card Neumorphic Styles ─── */
+.coup-card {
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(145deg, #faf7f0, #e6e0d3);
+  box-shadow:
+    6px 6px 14px var(--neu-shadow-dark),
+    -6px -6px 14px var(--neu-shadow-light);
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.coup-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow:
+    10px 10px 22px var(--neu-shadow-dark),
+    -10px -10px 22px var(--neu-shadow-light);
+}
+
+.coup-card.selected {
+  border-color: var(--gold);
+  box-shadow:
+    0 0 0 3px var(--gold),
+    0 0 20px rgba(217, 119, 6, 0.35),
+    8px 8px 18px var(--neu-shadow-dark);
+}
+
+.coup-card.dead {
+  filter: grayscale(0.85) opacity(0.65);
+  box-shadow:
+    inset 4px 4px 8px var(--neu-shadow-dark),
+    inset -4px -4px 8px var(--neu-shadow-light);
+}
+
+/* Card shimmer effect */
+.card-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 60%
+  );
+  animation: shimmer 4s ease-in-out infinite;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+@keyframes shimmer {
+  0%, 100% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+}
+
+/* ─── Player Seat Neumorphic Panel ─── */
+.player-seat-panel {
+  background: linear-gradient(145deg, #f5f1e8, #e0d8c9);
+  border-radius: 24px;
+  box-shadow:
+    9px 9px 20px var(--neu-shadow-dark),
+    -9px -9px 20px var(--neu-shadow-light);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  color: var(--text-primary);
+}
+
+.player-seat-panel.is-turn {
+  box-shadow:
+    0 0 0 3px var(--gold),
+    12px 12px 24px var(--neu-shadow-dark),
+    -12px -12px 24px var(--neu-shadow-light),
+    0 0 25px rgba(217, 119, 6, 0.2);
+}
+
+.player-seat-panel.eliminated {
+  opacity: 0.5;
+  filter: grayscale(0.5);
+  box-shadow:
+    inset 4px 4px 10px var(--neu-shadow-dark),
+    inset -4px -4px 10px var(--neu-shadow-light);
+}
+
+/* ─── 3D Gold Coin Stack ─── */
+.coin-stack {
+  position: relative;
+  width: 44px;
+  height: 44px;
+}
+
+.coin {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 35%, #d97706 70%, #b45309 100%);
+  box-shadow:
+    3px 3px 6px rgba(180, 83, 9, 0.3),
+    -2px -2px 4px rgba(255, 255, 255, 0.8),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 4px rgba(180, 83, 9, 0.4);
+  position: absolute;
+  border: 2px solid #b45309;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 900;
+  color: #78350f;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* ─── Action Panel Neumorphic ─── */
+.action-bar {
+  background: linear-gradient(145deg, #f5f1e8, #e1d9ca);
+  border-radius: 28px;
+  box-shadow:
+    12px 12px 28px var(--neu-shadow-dark),
+    -12px -12px 28px var(--neu-shadow-light);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.action-btn {
+  background: linear-gradient(145deg, #f7f4eb, #e2dccf);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  color: var(--text-primary);
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  padding: 12px 20px;
+  transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow:
+    6px 6px 14px var(--neu-shadow-dark),
+    -6px -6px 14px var(--neu-shadow-light);
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow:
+    8px 8px 18px var(--neu-shadow-dark),
+    -8px -8px 18px var(--neu-shadow-light),
+    0 0 15px rgba(217, 119, 6, 0.15);
+  border-color: var(--gold-light);
+}
+
+.action-btn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow:
+    inset 4px 4px 8px var(--neu-shadow-dark),
+    inset -4px -4px 8px var(--neu-shadow-light);
+}
+
+.action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow:
+    inset 2px 2px 4px var(--neu-shadow-dark),
+    inset -2px -2px 4px var(--neu-shadow-light);
+}
+
+.action-btn.primary {
+  background: linear-gradient(145deg, #f59e0b, #d97706);
+  color: #ffffff;
+  border-color: #b45309;
+  font-weight: 900;
+  box-shadow:
+    6px 6px 14px rgba(180, 83, 9, 0.35),
+    -4px -4px 10px rgba(255, 255, 255, 0.8);
+}
+
+.action-btn.primary:hover:not(:disabled) {
+  background: linear-gradient(145deg, #fbbf24, #d97706);
+  box-shadow:
+    8px 8px 18px rgba(180, 83, 9, 0.45),
+    -4px -4px 10px rgba(255, 255, 255, 0.9);
+}
+
+.action-btn.danger {
+  background: linear-gradient(145deg, #ef4444, #dc2626);
+  color: #ffffff;
+  border-color: #b91c1c;
+  box-shadow:
+    6px 6px 14px rgba(185, 28, 28, 0.35),
+    -4px -4px 10px rgba(255, 255, 255, 0.8);
+}
+
+.action-btn.block {
+  background: linear-gradient(145deg, #8b5cf6, #7c3aed);
+  color: #ffffff;
+  border-color: #6d28d9;
+  box-shadow:
+    6px 6px 14px rgba(109, 40, 217, 0.35),
+    -4px -4px 10px rgba(255, 255, 255, 0.8);
+}
+
+/* ─── Game Log Panel ─── */
+.game-log-panel {
+  background: linear-gradient(145deg, #f5f1e8, #e0d8c9);
+  border-radius: 24px;
+  box-shadow:
+    10px 10px 24px var(--neu-shadow-dark),
+    -10px -10px 24px var(--neu-shadow-light);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.game-log-content {
+  background: linear-gradient(145deg, #dfd8c9, #f7f3ea);
+  box-shadow:
+    inset 4px 4px 8px var(--neu-shadow-dark),
+    inset -4px -4px 8px var(--neu-shadow-light);
+  border-radius: 16px;
+}
+
+/* ─── Modal Overlay & Panel ─── */
+.coup-modal-overlay {
+  background: rgba(45, 40, 34, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.coup-modal-panel {
+  background: linear-gradient(145deg, #f7f3ea, #dfd8c9);
+  border-radius: 28px;
+  box-shadow:
+    16px 16px 36px var(--neu-shadow-dark),
+    -16px -16px 36px var(--neu-shadow-light),
+    0 20px 40px rgba(45, 40, 34, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
+}
+
+/* ─── Turn Indicator ─── */
+.turn-indicator {
+  background: linear-gradient(145deg, #f7f3ea, #e2dccf);
+  border: 2px solid var(--gold-light);
+  border-radius: 99px;
+  box-shadow:
+    8px 8px 18px var(--neu-shadow-dark),
+    -8px -8px 18px var(--neu-shadow-light),
+    0 0 15px rgba(217, 119, 6, 0.2);
+}
+
+/* ─── Status Badges ─── */
+.status-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.status-alive {
+  background: linear-gradient(145deg, #dcfce7, #bbf7d0);
+  color: #15803d;
+  box-shadow:
+    2px 2px 4px var(--neu-shadow-dark),
+    -2px -2px 4px var(--neu-shadow-light);
+  border: 1px solid #86efac;
+}
+
+.status-eliminated {
+  background: linear-gradient(145deg, #fee2e2, #fecaca);
+  color: #b91c1c;
+  box-shadow:
+    inset 2px 2px 4px rgba(185, 28, 28, 0.15);
+  border: 1px solid #fca5a5;
+}
+
+/* Scrollbar tweaks */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 5px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: var(--neu-shadow-dark);
+  border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: #b3a790;
+}
