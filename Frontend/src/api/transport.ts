@@ -17,6 +17,7 @@ export interface ITransport {
   sendChallenge(challengerId: string): Promise<void>;
   sendLoseInfluence(playerId: string, cardId: string): Promise<void>;
   sendExchange(keptCardIds: string[]): Promise<void>;
+  setReady?(isReady: boolean): Promise<void>;
   onStateUpdate(callback: (state: GameState) => void): void;
   connect(): Promise<void>;
   disconnect(): void;
@@ -92,10 +93,14 @@ export class MockTransport implements ITransport {
   private scheduleBotActionIfNeeded(): void {
     if (this.state.phase === 'GAME_OVER') return;
 
+    const localPlayer = this.state.players.find((p) => p.isLocalPlayer);
+    const isLocalAlive = !!(localPlayer && localPlayer.isAlive);
+
     // 1. If it's a Bot's turn in ACTION_SELECTION
     const currentTurnPlayer = this.state.players[this.state.turnIndex];
     if (this.state.phase === 'ACTION_SELECTION' && !currentTurnPlayer.isLocalPlayer && currentTurnPlayer.isAlive) {
       setTimeout(() => {
+        if (this.state.phase !== 'ACTION_SELECTION') return;
         const legal = getLegalActions(this.state, currentTurnPlayer);
         const validOptions = legal.filter((opt) => !opt.disabled);
         if (validOptions.length > 0) {
@@ -114,56 +119,150 @@ export class MockTransport implements ITransport {
           }
           this.sendAction(action);
         }
-      }, 1000);
+      }, 1200);
       return;
     }
 
-    // 2. If RESPONSE_WINDOW or BLOCK_RESPONSE_WINDOW and waiting for response
-    if (this.state.phase === 'RESPONSE_WINDOW' || this.state.phase === 'BLOCK_RESPONSE_WINDOW') {
+    // 2. RESPONSE_WINDOW (Action declared, waiting for challenges or blocks)
+    if (this.state.phase === 'RESPONSE_WINDOW') {
       const pending = this.state.pendingAction;
-      const isLocalActor = this.state.players.find(
-        (p) => p.id === pending?.sourcePlayerId
-      )?.isLocalPlayer;
-      const isLocalTarget = this.state.players.find(
-        (p) => p.id === pending?.targetPlayerId
-      )?.isLocalPlayer;
+      if (!pending) return;
 
-      // If local player isn't involved in responding, pass after short delay
-      if (!isLocalActor && !isLocalTarget) {
+      const isLocalActor = localPlayer && pending.sourcePlayerId === localPlayer.id;
+
+      // Case A: Local human is the actor -> BOTS must decide whether to challenge or block
+      if (isLocalActor) {
         setTimeout(() => {
+          if (this.state.phase !== 'RESPONSE_WINDOW') return;
+
+          const actionType = pending.action.type;
+          const targetBot = this.state.players.find(
+            (p) => p.id === pending.targetPlayerId && !p.isLocalPlayer && p.isAlive
+          );
+          const livingBots = this.state.players.filter(
+            (p) => !p.isLocalPlayer && p.isAlive && p.id !== pending.sourcePlayerId
+          );
+
+          // Chance for bot to challenge claimed role (Tax, Steal, Assassinate, Exchange)
+          const isClaim = actionType === 'TAX' || actionType === 'STEAL' || actionType === 'ASSASSINATE' || actionType === 'EXCHANGE';
+          if (isClaim && Math.random() < 0.25 && livingBots.length > 0) {
+            const challenger = livingBots[Math.floor(Math.random() * livingBots.length)];
+            this.sendChallenge(challenger.id);
+            return;
+          }
+
+          // Chance for bot to block
+          if (actionType === 'FOREIGN_AID') {
+            // Any bot with Duke (or 30% bluff) blocks with Duke
+            const dukeBot = livingBots.find(b => b.cards.some(c => !c.isRevealed && c.role === 'Duke')) || (Math.random() < 0.25 ? livingBots[0] : null);
+            if (dukeBot) {
+              this.sendBlock(dukeBot.id, 'Duke');
+              return;
+            }
+          } else if (actionType === 'STEAL' && targetBot) {
+            // Target bot blocks with Captain or Ambassador
+            const hasBlockCard = targetBot.cards.some(c => !c.isRevealed && (c.role === 'Captain' || c.role === 'Ambassador'));
+            if (hasBlockCard || Math.random() < 0.35) {
+              this.sendBlock(targetBot.id, 'Captain');
+              return;
+            }
+          } else if (actionType === 'ASSASSINATE' && targetBot) {
+            // Target bot blocks with Contessa
+            const hasContessa = targetBot.cards.some(c => !c.isRevealed && c.role === 'Contessa');
+            if (hasContessa || Math.random() < 0.35) {
+              this.sendBlock(targetBot.id, 'Contessa');
+              return;
+            }
+          }
+
+          // If no bot challenged or blocked -> bots pass
           this.sendPass();
-        }, 1200);
+        }, 1500);
+        return;
       }
+
+      // Case B: A BOT is the actor -> Human player is eligible to respond!
+      // If local player is alive, DO NOT AUTO-PASS! Let human player decide (Challenge, Block, or Allow)!
+      if (isLocalAlive) {
+        // Human player sees the modal and responds manually. No timeout.
+        return;
+      }
+
+      // Case C: Local player is dead/eliminated -> bots simulate amongst themselves
+      setTimeout(() => {
+        if (this.state.phase !== 'RESPONSE_WINDOW') return;
+        this.sendPass();
+      }, 1200);
+      return;
     }
 
-    // 3. If LOSE_INFLUENCE_PENDING for a bot
+    // 3. BLOCK_RESPONSE_WINDOW (Block declared, waiting for challenge to block)
+    if (this.state.phase === 'BLOCK_RESPONSE_WINDOW') {
+      const pending = this.state.pendingAction;
+      const blocker = this.state.players.find(p => p.id === pending?.block?.blockerPlayerId);
+
+      // If local player was the one who blocked -> bots decide whether to challenge
+      if (blocker?.isLocalPlayer) {
+        setTimeout(() => {
+          if (this.state.phase !== 'BLOCK_RESPONSE_WINDOW') return;
+          const livingBots = this.state.players.filter(p => !p.isLocalPlayer && p.isAlive);
+          // 25% chance a bot challenges the human's block
+          if (Math.random() < 0.25 && livingBots.length > 0) {
+            const challenger = livingBots[Math.floor(Math.random() * livingBots.length)];
+            this.sendChallenge(challenger.id);
+          } else {
+            this.sendPass();
+          }
+        }, 1500);
+        return;
+      }
+
+      // If a bot blocked -> Human player is eligible to challenge the bot's block!
+      if (isLocalAlive) {
+        // Human player sees the Challenge Block modal and responds manually. Do not auto-pass!
+        return;
+      }
+
+      // If local player is dead -> bots pass
+      setTimeout(() => {
+        if (this.state.phase !== 'BLOCK_RESPONSE_WINDOW') return;
+        this.sendPass();
+      }, 1200);
+      return;
+    }
+
+    // 4. LOSE_INFLUENCE_PENDING for a bot
     if (this.state.phase === 'LOSE_INFLUENCE_PENDING' && this.state.pendingLoseInfluence) {
       const targetPlayer = this.state.players.find(
         (p) => p.id === this.state.pendingLoseInfluence?.playerId
       );
       if (targetPlayer && !targetPlayer.isLocalPlayer && targetPlayer.isAlive) {
         setTimeout(() => {
+          if (this.state.phase !== 'LOSE_INFLUENCE_PENDING') return;
           const activeCard = targetPlayer.cards.find((c) => !c.isRevealed);
           if (activeCard) {
             this.sendLoseInfluence(targetPlayer.id, activeCard.id);
           }
         }, 1200);
       }
+      return;
     }
 
-    // 4. If EXCHANGE_PENDING for a bot
+    // 5. EXCHANGE_PENDING for a bot
     if (this.state.phase === 'EXCHANGE_PENDING' && this.state.pendingExchange) {
       const targetPlayer = this.state.players.find(
         (p) => p.id === this.state.pendingExchange?.playerId
       );
       if (targetPlayer && !targetPlayer.isLocalPlayer) {
         setTimeout(() => {
+          if (this.state.phase !== 'EXCHANGE_PENDING') return;
           const activeCards = targetPlayer.cards.filter((c) => !c.isRevealed);
           const pool = [...activeCards, ...this.state.pendingExchange!.drawnCards];
           const keptIds = pool.slice(0, activeCards.length).map((c) => c.id);
           this.sendExchange(keptIds);
         }, 1200);
       }
+      return;
     }
   }
 }

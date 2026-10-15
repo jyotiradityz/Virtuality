@@ -83,7 +83,7 @@ export function advanceTurn(state: GameState): GameState {
       pendingAction: null,
       pendingLoseInfluence: null,
       pendingExchange: null,
-      gameLog: addLogEntry(state, `🏆 ${winner.name} has won the game!`, 'RESOLUTION'),
+      gameLog: addLogEntry(state, `${winner.name} has won the game! Victory.`, 'RESOLUTION'),
     };
   }
 

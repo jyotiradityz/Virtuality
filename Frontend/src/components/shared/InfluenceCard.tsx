@@ -1,8 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import type { Role } from '../../types/game';
+import {
+  DukeIcon,
+  AssassinIcon,
+  CaptainIcon,
+  AmbassadorIcon,
+  ContessaIcon,
+} from './CoupIcons';
 
-// Import character assets
 import AssassinImg from '../../assets/Coup Assets/Assasin.jpg';
 import DukeImg from '../../assets/Coup Assets/Duke.jpg';
 import CaptainImg from '../../assets/Coup Assets/Captain.jpg';
@@ -27,22 +33,6 @@ const ROLE_IMAGES: Record<Role, string> = {
   Contessa: ContessaImg,
 };
 
-const ROLE_ACCENTS: Record<Role, { text: string; bg: string; border: string }> = {
-  Duke: { text: 'text-amber-800', bg: 'bg-amber-100/90', border: 'border-amber-400' },
-  Assassin: { text: 'text-purple-900', bg: 'bg-purple-100/90', border: 'border-purple-400' },
-  Captain: { text: 'text-sky-900', bg: 'bg-sky-100/90', border: 'border-sky-400' },
-  Ambassador: { text: 'text-emerald-900', bg: 'bg-emerald-100/90', border: 'border-emerald-400' },
-  Contessa: { text: 'text-rose-900', bg: 'bg-rose-100/90', border: 'border-rose-400' },
-};
-
-const ROLE_ICONS: Record<Role, string> = {
-  Duke: '👑',
-  Assassin: '🗡️',
-  Captain: '⚓',
-  Ambassador: '📜',
-  Contessa: '🛡️',
-};
-
 export const InfluenceCard: React.FC<InfluenceCardProps> = ({
   role,
   isHidden = false,
@@ -52,85 +42,94 @@ export const InfluenceCard: React.FC<InfluenceCardProps> = ({
   onClick,
 }) => {
   const sizeClass = isLarge
-    ? 'w-[124px] h-[175px]'
-    : 'w-[74px] h-[104px]';
+    ? 'w-[96px] h-[140px] sm:w-[114px] sm:h-[164px]'
+    : 'w-[44px] h-[64px] sm:w-[52px] sm:h-[74px]';
 
-  // Revealed / Dead card
+  // Revealed / Dead Card
   if (isRevealed) {
     return (
-      <div className={`${sizeClass} relative rounded-xl overflow-hidden coup-card dead`}>
+      <div className={`${sizeClass} neu-card dead relative rounded-xl overflow-hidden shrink-0`}>
         <img
           src={role ? ROLE_IMAGES[role] : CardBackImg}
-          alt={role || 'Dead Card'}
+          alt={role || 'Eliminated Card'}
           className="absolute inset-0 w-full h-full object-cover"
           draggable={false}
         />
-        {/* Death overlay */}
-        <div className="absolute inset-0 bg-stone-900/80 backdrop-blur-[2px] flex flex-col items-center justify-center p-1 text-center">
-          <div className="text-red-400 font-black text-xs uppercase tracking-wider mb-1">✕ ELIMINATED</div>
-          <div className="text-stone-300 font-extrabold text-[10px] uppercase">{role}</div>
+        <div className="absolute inset-0 bg-stone-950/75 backdrop-blur-[1px] flex flex-col items-center justify-center p-1 text-center">
+          <div className="text-red-400 font-black text-[9px] sm:text-[10px] tracking-wider uppercase">
+            ✕ DEAD
+          </div>
+          {role && (
+            <div className="text-amber-200/90 font-bold text-[8px] sm:text-[9px] uppercase mt-0.5">
+              {role}
+            </div>
+          )}
         </div>
       </div>
     );
   }
 
-  // Hidden face-down card
+  // Hidden Card (Opponent hand or face-down deck)
   if (isHidden) {
     return (
       <motion.div
-        animate={{ rotateY: [0, 1.5, 0, -1.5, 0] }}
-        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-        className={`${sizeClass} relative rounded-xl overflow-hidden coup-card`}
+        whileHover={onClick ? { scale: 1.05, y: -4 } : {}}
+        className={`${sizeClass} neu-card relative rounded-xl overflow-hidden shrink-0`}
       >
         <img
           src={CardBackImg}
-          alt="Hidden Card"
+          alt="Hidden Influence"
           className="absolute inset-0 w-full h-full object-cover"
           draggable={false}
         />
-        <div className="card-shimmer" />
+        <div className="absolute inset-0 border border-black/10 rounded-xl pointer-events-none" />
       </motion.div>
     );
   }
 
-  // Visible card (local player's active card)
-  const accent = role ? ROLE_ACCENTS[role] : { text: 'text-amber-800', bg: 'bg-amber-100', border: 'border-amber-400' };
-  const icon = role ? ROLE_ICONS[role] : '🃏';
+  const renderRoleIcon = () => {
+    switch (role) {
+      case 'Duke':
+        return <DukeIcon className="w-3.5 h-3.5 text-amber-500" />;
+      case 'Assassin':
+        return <AssassinIcon className="w-3.5 h-3.5 text-red-500" />;
+      case 'Captain':
+        return <CaptainIcon className="w-3.5 h-3.5 text-sky-500" />;
+      case 'Ambassador':
+        return <AmbassadorIcon className="w-3.5 h-3.5 text-emerald-500" />;
+      case 'Contessa':
+        return <ContessaIcon className="w-3.5 h-3.5 text-pink-500" />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <motion.div
-      whileHover={onClick ? { y: -8, scale: 1.04 } : {}}
-      whileTap={onClick ? { scale: 0.96 } : {}}
+      whileHover={onClick ? { scale: 1.05, y: -6 } : {}}
+      whileTap={onClick ? { scale: 0.97 } : {}}
       onClick={onClick}
       className={`
-        ${sizeClass} relative rounded-xl overflow-hidden cursor-pointer
-        coup-card ${isSelected ? 'selected' : ''}
+        ${sizeClass} neu-card relative rounded-xl overflow-hidden shrink-0
+        ${isSelected ? 'selected ring-3 ring-amber-500' : ''}
       `}
     >
-      {/* Character Image */}
       <img
         src={role ? ROLE_IMAGES[role] : CardBackImg}
-        alt={role || 'Card'}
+        alt={role || 'Influence'}
         className="absolute inset-0 w-full h-full object-cover"
         draggable={false}
       />
 
-      {/* Top Left Icon Pill */}
-      <div className="absolute top-1.5 left-1.5 z-10">
-        <div className="w-6 h-6 rounded-full bg-stone-900/60 backdrop-blur-md flex items-center justify-center text-xs shadow-md border border-white/20">
-          {icon}
+      {/* Subtle Corner Role Crest Badge for Local Hand */}
+      {isLarge && role && (
+        <div className="absolute top-1.5 left-1.5 z-10 w-6 h-6 rounded-full bg-white/90 backdrop-blur-sm border border-stone-300 shadow-sm flex items-center justify-center">
+          {renderRoleIcon()}
         </div>
-      </div>
+      )}
 
-      {/* Bottom Role Banner */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-stone-950/90 via-stone-900/60 to-transparent p-2 pt-5 z-10">
-        <div className={`${accent.bg} ${accent.text} px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider text-center shadow-sm border ${accent.border}`}>
-          {role}
-        </div>
-      </div>
-
-      {/* Subtle Shimmer */}
-      <div className="card-shimmer" />
+      {/* Clean White Bevel Border */}
+      <div className="absolute inset-0 border-2 border-white/60 rounded-xl pointer-events-none" />
     </motion.div>
   );
 };

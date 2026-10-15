@@ -4,6 +4,17 @@ import type { Player, GameAction, ActionOption, ActionType } from '../../types/g
 import { getLegalActions } from '../../game/rules';
 import { useGameStore } from '../../store/gameStore';
 import { InfluenceCard } from '../shared/InfluenceCard';
+import {
+  IncomeIcon,
+  ForeignAidIcon,
+  TaxIcon,
+  StealIcon,
+  AssassinateIcon,
+  ExchangeIcon,
+  CoupSwordsIcon,
+  TargetIcon,
+  CoinCrestIcon,
+} from '../shared/CoupIcons';
 import CaptainAvatar from '../../assets/Coup Assets/Captain.jpg';
 
 interface LocalPlayerConsoleProps {
@@ -16,20 +27,12 @@ interface LocalPlayerConsoleProps {
 interface ActionBoxConfig {
   type: ActionType;
   label: string;
-  icon: string;
-  subtitle: string;
-  isAggressive?: boolean;
+  role?: string;
+  effect: string;
+  icon: React.ReactNode;
+  tintClass: string;
+  isCoup?: boolean;
 }
-
-const ACTION_BOX_CONFIGS: ActionBoxConfig[] = [
-  { type: 'INCOME', label: 'INCOME', icon: '💵', subtitle: '+1' },
-  { type: 'FOREIGN_AID', label: 'FOREIGN AID', icon: '🌐', subtitle: '+2' },
-  { type: 'TAX', label: 'TAX', icon: '💰', subtitle: 'Duke' },
-  { type: 'STEAL', label: 'STEAL', icon: '👮', subtitle: 'Captain' },
-  { type: 'ASSASSINATE', label: 'ASSASSINATE', icon: '💀', subtitle: '-3 Assassin', isAggressive: true },
-  { type: 'EXCHANGE', label: 'EXCHANGE', icon: '🤝', subtitle: 'Ambassador' },
-  { type: 'COUP', label: 'COUP', icon: '⚔️', subtitle: '-7', isAggressive: true },
-];
 
 export const LocalPlayerConsole: React.FC<LocalPlayerConsoleProps> = ({
   player,
@@ -42,9 +45,70 @@ export const LocalPlayerConsole: React.FC<LocalPlayerConsoleProps> = ({
 
   if (!gameState) return null;
 
-  const isMyTurn = gameState.phase === 'ACTION_SELECTION' && gameState.players[gameState.turnIndex]?.id === player.id;
+  const isMyTurn =
+    gameState.phase === 'ACTION_SELECTION' &&
+    gameState.players[gameState.turnIndex]?.id === player.id;
   const legalOptions = isMyTurn ? getLegalActions(gameState, player) : [];
   const livingOpponents = gameState.players.filter((p) => p.isAlive && p.id !== player.id);
+  const mustCoup = player.coins >= 10;
+
+  // 7 Coup Actions matching Image 2
+  const allActions: ActionBoxConfig[] = [
+    {
+      type: 'INCOME',
+      label: 'INCOME',
+      effect: '+1',
+      icon: <IncomeIcon className="w-4 h-4 text-emerald-600" />,
+      tintClass: 'neu-action-green',
+    },
+    {
+      type: 'FOREIGN_AID',
+      label: 'FOREIGN AID',
+      effect: '+2',
+      icon: <ForeignAidIcon className="w-4 h-4 text-teal-600" />,
+      tintClass: 'neu-action-green',
+    },
+    {
+      type: 'TAX',
+      label: 'TAX',
+      role: 'Duke',
+      effect: '+3',
+      icon: <TaxIcon className="w-4 h-4 text-amber-600" />,
+      tintClass: 'neu-action-amber',
+    },
+    {
+      type: 'STEAL',
+      label: 'STEAL',
+      role: 'Captain',
+      effect: '2 Coins',
+      icon: <StealIcon className="w-4 h-4 text-slate-700" />,
+      tintClass: 'neu-action-card',
+    },
+    {
+      type: 'ASSASSINATE',
+      label: 'ASSASSINATE',
+      role: 'Assassin',
+      effect: '-3 Coins',
+      icon: <AssassinateIcon className="w-4 h-4 text-red-600" />,
+      tintClass: 'neu-action-red',
+    },
+    {
+      type: 'EXCHANGE',
+      label: 'EXCHANGE',
+      role: 'Ambassador',
+      effect: 'Draw 2',
+      icon: <ExchangeIcon className="w-4 h-4 text-purple-600" />,
+      tintClass: 'neu-action-purple',
+    },
+    {
+      type: 'COUP',
+      label: 'COUP',
+      effect: '-7 Coins',
+      icon: <CoupSwordsIcon className="w-4 h-4 text-amber-900" />,
+      tintClass: 'neu-action-coup',
+      isCoup: true,
+    },
+  ];
 
   const handleActionClick = (boxConfig: ActionBoxConfig) => {
     if (!isMyTurn) return;
@@ -70,33 +134,40 @@ export const LocalPlayerConsole: React.FC<LocalPlayerConsoleProps> = ({
   };
 
   return (
-    <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center select-none max-w-[95vw]">
-      {/* Target Picker Modal overlay if choosing target */}
+    <div className="fixed bottom-2 sm:bottom-3 inset-x-0 z-40 flex flex-col items-center select-none px-3 pointer-events-none">
+      
+      {/* Target Noble Selection Modal Tray */}
       <AnimatePresence>
         {pendingTargetAction && (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            initial={{ opacity: 0, y: 15, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="mb-2 neu-convex p-3 rounded-2xl w-full max-w-md border-2 border-amber-500/50 text-center shadow-2xl"
+            exit={{ opacity: 0, y: 15, scale: 0.95 }}
+            className="mb-2 pointer-events-auto p-4 rounded-2xl neu-flat max-w-md w-full text-center"
           >
-            <div className="text-xs font-black text-amber-900 mb-2 uppercase tracking-wide">
-              🎯 SELECT TARGET FOR {pendingTargetAction.label}
+            <div className="flex items-center justify-center gap-2 text-xs font-black text-amber-700 uppercase tracking-wider mb-3">
+              <TargetIcon className="w-4 h-4 text-amber-600" />
+              <span>Choose Target for {pendingTargetAction.label}</span>
             </div>
             <div className="flex gap-2 justify-center flex-wrap">
               {livingOpponents.map((opp) => (
                 <button
                   key={opp.id}
                   onClick={() => handleSelectTarget(opp.id)}
-                  className="action-btn primary px-4 py-2 text-xs font-black flex items-center gap-1.5"
+                  className="neu-btn px-3.5 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2"
                 >
-                  <span>{opp.name}</span>
-                  <span className="text-[10px] text-amber-100">💰{opp.coins}</span>
+                  <span className="text-stone-800">{opp.name}</span>
+                  <div className="neu-coin-stack">
+                    <div className="neu-3d-coin">
+                      <CoinCrestIcon className="w-2.5 h-2.5 text-amber-950" />
+                    </div>
+                    <span>{opp.coins}</span>
+                  </div>
                 </button>
               ))}
               <button
                 onClick={() => setPendingTargetAction(null)}
-                className="action-btn px-3 py-2 text-xs font-bold text-stone-600"
+                className="px-3 py-2 rounded-xl text-xs font-bold text-stone-500 hover:text-stone-800 cursor-pointer"
               >
                 Cancel
               </button>
@@ -105,121 +176,135 @@ export const LocalPlayerConsole: React.FC<LocalPlayerConsoleProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Main Console Box holding Action Menu + Influence Card Panel */}
-      <div className="flex flex-col items-center space-y-2">
-        {/* 1. ACTION MENU ROW */}
-        <div className="relative neu-convex rounded-2xl p-2 flex flex-col items-center border border-white/80 shadow-xl">
-          {/* Tab Header Badge */}
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#ece7dc] px-4 py-0.5 rounded-full border border-stone-300 shadow-sm">
-            <span className="text-stone-700 text-[9px] font-black uppercase tracking-widest">
-              Action Menu
+      {/* Main Console Container */}
+      <div className="pointer-events-auto flex flex-col items-center gap-2 w-full max-w-3xl sm:max-w-[760px]">
+        
+        {/* ACTION MENU (Directly matching Image 2) */}
+        {isMyTurn ? (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full p-2.5 sm:p-3 rounded-2xl neu-flat flex flex-col items-center"
+          >
+            {/* Header: Action Menu tag & prompt */}
+            <div className="flex items-center justify-between w-full px-2 pb-1.5 border-b border-stone-200 mb-2">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                <span className="text-xs font-black text-stone-800 uppercase tracking-wider">
+                  {mustCoup ? 'MANDATORY COUP (10+ COINS)' : 'ACTION MENU • CHOOSE YOUR MOVE'}
+                </span>
+              </div>
+              <span className="text-xs font-extrabold text-amber-700">
+                {player.coins} Coins Available
+              </span>
+            </div>
+
+            {/* 7 Action Buttons Grid */}
+            <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 sm:gap-2 w-full">
+              {allActions.map((box) => {
+                const option = legalOptions.find((opt) => opt.action.type === box.type);
+                const isDisabled = option ? option.disabled : true;
+
+                return (
+                  <button
+                    key={box.type}
+                    disabled={isDisabled}
+                    onClick={() => handleActionClick(box)}
+                    className={`neu-action-card ${box.tintClass}`}
+                  >
+                    <div className="mb-1">{box.icon}</div>
+                    <span className="text-[10px] sm:text-[11px] font-black text-stone-900 uppercase tracking-tight block leading-tight">
+                      {box.label}
+                    </span>
+                    <span className="text-[9px] font-extrabold text-stone-500 block mt-0.5">
+                      {box.role ? `${box.role}` : box.effect}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        ) : (
+          <div className="px-5 py-2 rounded-full neu-flat text-center shadow-sm">
+            <span className="text-xs font-extrabold text-stone-600 tracking-wide">
+              Waiting for noble's move...
+            </span>
+          </div>
+        )}
+
+        {/* YOUR INFLUENCE DOCK (Directly matching Image 2) */}
+        <div className="w-full max-w-xl p-2.5 sm:p-3 rounded-2xl neu-flat flex items-center justify-between">
+          
+          {/* Left: 3D Coins Stack */}
+          <div className="flex flex-col items-center pl-2">
+            <div className="relative flex flex-col items-center mb-1">
+              {[0, 1, 2].map((idx) => (
+                <div
+                  key={idx}
+                  className="w-8 h-3 rounded-full border border-amber-300 shadow-sm relative"
+                  style={{
+                    background:
+                      idx === 0
+                        ? 'radial-gradient(ellipse at 35% 30%, #fef08a 0%, #f59e0b 60%, #b45309 100%)'
+                        : 'linear-gradient(180deg, #fbbf24 0%, #d97706 70%, #78350f 100%)',
+                    marginTop: idx === 0 ? 0 : -5,
+                    zIndex: 3 - idx,
+                  }}
+                />
+              ))}
+            </div>
+            <span className="text-sm sm:text-base font-black text-amber-900 leading-none">
+              {player.coins}
+            </span>
+            <span className="text-[8px] font-extrabold text-stone-400 uppercase tracking-wider">
+              COINS
             </span>
           </div>
 
-          {/* Action Boxes Row */}
-          <div className="flex items-center gap-1.5 pt-2 px-1">
-            {ACTION_BOX_CONFIGS.map((box) => {
-              const option = legalOptions.find((opt) => opt.action.type === box.type);
-              const isDisabled = !isMyTurn || (option ? option.disabled : true);
-
-              return (
-                <motion.button
-                  key={box.type}
-                  whileHover={!isDisabled ? { y: -3, scale: 1.03 } : {}}
-                  whileTap={!isDisabled ? { scale: 0.96 } : {}}
-                  disabled={isDisabled}
-                  onClick={() => handleActionClick(box)}
-                  className={`
-                    w-[92px] h-[95px] rounded-xl flex flex-col items-center justify-between p-2 transition-all relative
-                    ${isDisabled ? 'opacity-40 grayscale cursor-not-allowed neu-pressed' : 'neu-convex cursor-pointer'}
-                    ${
-                      box.isAggressive
-                        ? 'border-2 border-red-400/40 hover:border-red-500 hover:shadow-[0_0_12px_rgba(239,68,68,0.2)]'
-                        : 'border-2 border-emerald-400/40 hover:border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.2)]'
-                    }
-                  `}
-                >
-                  {/* Icon */}
-                  <span className="text-2xl leading-none mt-1">{box.icon}</span>
-
-                  {/* Action Label */}
-                  <span className="text-[10px] font-black text-stone-900 tracking-tighter uppercase text-center leading-tight">
-                    {box.label}
-                  </span>
-
-                  {/* Subtitle / Role / Cost */}
-                  <span className={`text-[9px] font-extrabold truncate max-w-full ${box.isAggressive ? 'text-red-700' : 'text-emerald-700'}`}>
-                    {box.subtitle}
-                  </span>
-                </motion.button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 2. YOUR INFLUENCE PLAYER SEAT PANEL */}
-        <div className="relative neu-convex rounded-2xl p-3 flex items-center justify-between w-full border border-white/80 shadow-2xl px-6 min-w-[620px]">
-          {/* Tab Header Badge */}
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#ece7dc] px-4 py-0.5 rounded-full border border-stone-300 shadow-sm">
-            <span className="text-amber-800 text-[9px] font-black uppercase tracking-widest">
+          {/* Center: YOUR INFLUENCE Cards */}
+          <div className="flex flex-col items-center">
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-stone-500 mb-1">
               YOUR INFLUENCE
             </span>
-          </div>
-
-          {/* Left: 3D Coin Stack + Total Counter */}
-          <div className="flex items-center gap-3 pr-4 border-r border-stone-300/60">
-            <div className="flex flex-col items-center">
-              <div className="flex items-center gap-0.5 mb-1">
-                {Array.from({ length: Math.min(player.coins, 4) }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-4 h-4 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 border border-amber-700 shadow-sm"
-                    style={{ marginLeft: i > 0 ? '-6px' : '0', zIndex: i }}
+            <div className="flex items-center gap-3">
+              {player.cards.map((card, idx) => (
+                <motion.div
+                  key={card.id}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: idx * 0.1 }}
+                >
+                  <InfluenceCard
+                    role={card.role}
+                    isRevealed={card.isRevealed}
+                    isSelected={selectedCardId === card.id}
+                    isLarge
+                    onClick={() => {
+                      if (!card.isRevealed && onCardSelect) {
+                        onCardSelect(card.id);
+                      }
+                    }}
                   />
-                ))}
-              </div>
-              <span className="text-stone-900 font-black text-2xl tabular-nums leading-none">
-                {player.coins}
-              </span>
-              <span className="text-stone-500 text-[8px] font-extrabold uppercase tracking-widest mt-0.5">
-                COINS
-              </span>
+                </motion.div>
+              ))}
             </div>
           </div>
 
-          {/* Center: 2 Large Influence Cards */}
-          <div className="flex items-center gap-4 px-4">
-            {player.cards.map((card) => (
-              <InfluenceCard
-                key={card.id}
-                role={card.role}
-                isRevealed={card.isRevealed}
-                isSelected={selectedCardId === card.id}
-                isLarge
-                onClick={() => {
-                  if (!card.isRevealed && onCardSelect) {
-                    onCardSelect(card.id);
-                  }
-                }}
-              />
-            ))}
+          {/* Right: Player Avatar & Name */}
+          <div className="flex flex-col items-center pr-2">
+            <div className="neu-avatar-ring w-11 h-11 sm:w-12 sm:h-12">
+              <img src={CaptainAvatar} alt="You" className="w-full h-full object-cover" />
+            </div>
+            <span className="text-xs font-black text-stone-800 uppercase mt-1 truncate max-w-[70px]">
+              {player.name}
+            </span>
+            <span className="text-[8px] font-extrabold text-emerald-600 uppercase">
+              YOU
+            </span>
           </div>
 
-          {/* Right: Round Avatar + Name */}
-          <div className="flex items-center gap-3 pl-4 border-l border-stone-300/60">
-            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-emerald-500 shadow-md">
-              <img src={CaptainAvatar} alt={player.name} className="w-full h-full object-cover" />
-            </div>
-            <div className="text-left">
-              <div className="text-stone-900 font-black text-sm uppercase tracking-wide truncate max-w-[100px]">
-                {player.name}
-              </div>
-              <div className="text-amber-700 text-[9px] font-extrabold uppercase tracking-widest">
-                YOU
-              </div>
-            </div>
-          </div>
         </div>
+
       </div>
     </div>
   );

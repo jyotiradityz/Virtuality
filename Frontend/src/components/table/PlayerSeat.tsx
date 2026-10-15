@@ -2,6 +2,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import type { Player } from '../../types/game';
 import { InfluenceCard } from '../shared/InfluenceCard';
+import { CoinCrestIcon } from '../shared/CoupIcons';
+
+import CaptainAvatar from '../../assets/Coup Assets/Captain.jpg';
+import DukeAvatar from '../../assets/Coup Assets/Duke.jpg';
+import AssassinAvatar from '../../assets/Coup Assets/Assasin.jpg';
+import ContessaAvatar from '../../assets/Coup Assets/Contessa.jpg';
+import AmbassadorAvatar from '../../assets/Coup Assets/Ambsador.jpg';
 
 interface PlayerSeatProps {
   player: Player;
@@ -12,6 +19,14 @@ interface PlayerSeatProps {
   onTargetClick?: () => void;
 }
 
+const AVATAR_MAP: Record<string, string> = {
+  Sam: DukeAvatar,
+  Alex: AssassinAvatar,
+  Riley: ContessaAvatar,
+  Jordan: AmbassadorAvatar,
+  Morgan: CaptainAvatar,
+};
+
 export const PlayerSeat: React.FC<PlayerSeatProps> = ({
   player,
   isTurn,
@@ -20,102 +35,86 @@ export const PlayerSeat: React.FC<PlayerSeatProps> = ({
   isTargetable = false,
   onTargetClick,
 }) => {
-  const activeCount = player.cards.filter((c) => !c.isRevealed).length;
+  const avatarImg = AVATAR_MAP[player.name] || CaptainAvatar;
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.7, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       onClick={isTargetable ? onTargetClick : undefined}
-      className={`
-        player-seat-panel relative p-3.5 flex flex-col items-center gap-2.5
-        ${isTurn ? 'is-turn' : ''}
-        ${!player.isAlive ? 'eliminated' : ''}
-        ${isTargetable ? 'cursor-pointer hover:scale-105 transition-transform' : ''}
-        ${player.isLocalPlayer ? 'min-w-[230px]' : 'min-w-[160px]'}
-      `}
+      className={`neu-player-podium select-none ${isTurn ? 'is-turn' : ''} ${
+        isTargetable ? 'cursor-pointer ring-2 ring-amber-400 hover:scale-105 transition-transform' : ''
+      }`}
     >
-      {/* Turn Indicator Pill */}
+      {/* Active Turn Indicator Banner */}
       {isTurn && (
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute -top-4 left-1/2 -translate-x-1/2 z-20"
+          className="px-2.5 py-0.5 rounded-full bg-amber-500 text-white font-extrabold text-[8px] sm:text-[9px] uppercase tracking-wider shadow-sm flex items-center gap-1"
         >
-          <div className="turn-indicator px-4 py-1 flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-            <span className="text-amber-800 text-[9px] font-black tracking-[0.2em] uppercase">
-              {player.isLocalPlayer ? 'YOUR TURN' : 'TURN'}
-            </span>
-          </div>
+          <div className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+          <span>TURN</span>
         </motion.div>
       )}
 
-      {/* Header Row */}
-      <div className="flex items-center justify-between w-full px-1">
-        <div className="flex items-center gap-2">
-          {/* Status Dot */}
-          <div className={`w-2.5 h-2.5 rounded-full ${player.isAlive ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-red-500'}`} />
-          {/* Player Name */}
-          <span className={`font-black text-xs truncate max-w-[100px] ${player.isLocalPlayer ? 'text-amber-700' : 'text-stone-800'}`}>
-            {player.name}
-            {player.isLocalPlayer && (
-              <span className="text-amber-600 text-[9px] ml-1 font-bold">(YOU)</span>
-            )}
-          </span>
-        </div>
-        {/* Influence Count Badge */}
-        <span className={`status-badge ${player.isAlive ? 'status-alive' : 'status-eliminated'}`}>
-          {player.isAlive ? `${activeCount} INF` : 'OUT'}
-        </span>
-      </div>
-
-      {/* Coins Display - Neumorphic Inset Pill */}
-      <div className="neu-concave px-4 py-1.5 rounded-full flex items-center gap-2 w-full justify-center">
-        <div className="flex items-center gap-0.5">
-          {Array.from({ length: Math.min(player.coins, 5) }).map((_, i) => (
-            <div
-              key={i}
-              className="w-4 h-4 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-amber-600 border border-amber-600/60 shadow-sm"
-              style={{ marginLeft: i > 0 ? '-6px' : '0', zIndex: i }}
-            />
-          ))}
-          {player.coins > 5 && (
-            <span className="text-amber-700 text-[9px] font-bold ml-0.5">+{player.coins - 5}</span>
-          )}
-        </div>
-        <span className="text-amber-800 font-black text-xs">{player.coins}</span>
-        <span className="text-stone-500 text-[9px] font-extrabold uppercase">COINS</span>
-      </div>
-
-      {/* Cards Display */}
-      <div className="flex gap-2.5 mt-1">
-        {player.cards.map((card) => (
-          <InfluenceCard
+      {/* Standing 3D Cards Tray */}
+      <div className="flex items-center gap-1.5">
+        {player.cards.map((card, idx) => (
+          <motion.div
             key={card.id}
-            role={card.role}
-            isHidden={!player.isLocalPlayer && !card.isRevealed}
-            isRevealed={card.isRevealed}
-            isSelected={selectedCardId === card.id}
-            isLarge={player.isLocalPlayer}
-            onClick={() => {
-              if (player.isLocalPlayer && !card.isRevealed && onCardSelect) {
-                onCardSelect(card.id);
-              }
-            }}
-          />
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.08 }}
+          >
+            <InfluenceCard
+              role={card.role}
+              isHidden={!card.isRevealed}
+              isRevealed={card.isRevealed}
+              isSelected={selectedCardId === card.id}
+              onClick={() => {
+                if (!card.isRevealed && onCardSelect) {
+                  onCardSelect(card.id);
+                }
+              }}
+            />
+          </motion.div>
         ))}
       </div>
 
-      {/* Target Ring */}
-      {isTargetable && (
-        <motion.div
-          animate={{ scale: [1, 1.05, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="absolute inset-0 rounded-[24px] border-2 border-dashed border-amber-500 pointer-events-none"
-        />
-      )}
+      {/* Player Medallion + Name & Coins */}
+      <div className="flex items-center gap-2 pt-0.5">
+        <div
+          className={`neu-avatar-ring shrink-0 ${
+            !player.isAlive ? 'opacity-40 grayscale ring-2 ring-red-500' : ''
+          }`}
+        >
+          <img
+            src={avatarImg}
+            alt={player.name}
+            className="w-full h-full object-cover"
+            draggable={false}
+          />
+          {!player.isAlive && (
+            <div className="absolute inset-0 bg-red-950/80 flex items-center justify-center text-red-200 font-black text-[9px]">
+              OUT
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col">
+          <span className="font-extrabold text-xs sm:text-sm text-stone-800 max-w-[85px] truncate leading-tight">
+            {player.name}
+          </span>
+          <div className="neu-coin-stack mt-0.5">
+            <div className="neu-3d-coin">
+              <CoinCrestIcon className="w-2.5 h-2.5 text-amber-950" />
+            </div>
+            <span>{player.coins}</span>
+          </div>
+        </div>
+      </div>
     </motion.div>
   );
 };

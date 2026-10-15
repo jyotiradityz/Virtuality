@@ -1,0 +1,107 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String            @id @default(uuid())
+  email         String            @unique
+  username      String            @unique
+  passwordHash  String
+  avatarUrl     String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  lobbyPlayers  LobbyPlayer[]
+  coupPlayers   CoupMatchPlayer[]
+  wonMatches    Match[]           @relation("MatchWinner")
+}
+
+model Lobby {
+  id            String      @id @default(uuid())
+  code          String      @unique
+  gameType      String      @default("COUP")
+  hostId        String
+  maxPlayers    Int         @default(6)
+  isPrivate     Boolean     @default(false)
+  password      String?
+  status        LobbyStatus @default(WAITING)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  players       LobbyPlayer[]
+  match         Match?
+}
+
+enum LobbyStatus {
+  WAITING
+  STARTING
+  IN_PROGRESS
+  FINISHED
+  EXPIRED
+}
+
+model LobbyPlayer {
+  id        String   @id @default(uuid())
+  lobbyId   String
+  userId    String
+  isReady   Boolean  @default(false)
+  isHost    Boolean  @default(false)
+  joinedAt  DateTime @default(now())
+
+  lobby     Lobby    @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([lobbyId, userId])
+}
+
+model Match {
+  id          String           @id @default(uuid())
+  lobbyId     String           @unique
+  gameType    String           @default("COUP")
+  winnerId    String?
+  status      MatchStatus      @default(ACTIVE)
+  startedAt   DateTime         @default(now())
+  endedAt     DateTime?
+
+  lobby       Lobby            @relation(fields: [lobbyId], references: [id])
+  winner      User?            @relation("MatchWinner", fields: [winnerId], references: [id])
+  coupState   CoupMatchState?
+  coupPlayers CoupMatchPlayer[]
+}
+
+enum MatchStatus {
+  ACTIVE
+  FINISHED
+  ABANDONED
+}
+
+model CoupMatchState {
+  id        String   @id @default(uuid())
+  matchId   String   @unique
+  version   Int      @default(1)
+  stateJson Json
+  updatedAt DateTime @updatedAt
+
+  match     Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+}
+
+model CoupMatchPlayer {
+  id        String   @id @default(uuid())
+  matchId   String
+  userId    String
+  seatIndex Int
+  coins     Int      @default(2)
+  influence Int      @default(2)
+  isWinner  Boolean  @default(false)
+  rank      Int?
+
+  match     Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([matchId, userId])
+}

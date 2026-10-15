@@ -1,52 +1,56 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { CoinCrestIcon } from '../shared/CoupIcons';
 
 interface CoinPileProps {
   coinPile?: number;
 }
 
 export const CoinPile: React.FC<CoinPileProps> = ({ coinPile = 42 }) => {
-  const visibleCoins = Math.min(coinPile, 12);
-
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0 }}
+      initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.8, delay: 0.3, ease: [0.23, 1, 0.32, 1] }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className="flex flex-col items-center justify-center select-none"
     >
-      {/* 3D Stacked Coins Visual */}
-      <div className="relative w-28 h-28 flex items-center justify-center mb-2">
-        <div className="relative" style={{ perspective: '200px', transformStyle: 'preserve-3d' }}>
-          {Array.from({ length: visibleCoins }).map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.04 * i, duration: 0.4 }}
+      {/* 3D Stack of Gold Coins (Cylinder Stack) */}
+      <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mb-1">
+        <div className="relative flex flex-col items-center">
+          {/* Stacked coin discs with realistic 3D offset */}
+          {[0, 1, 2, 3, 4].map((idx) => (
+            <div
+              key={idx}
+              className="w-10 h-3.5 sm:w-12 sm:h-4 rounded-full border border-amber-300 shadow-md relative"
               style={{
-                position: i === 0 ? 'relative' : 'absolute',
-                left: `${(i % 3) * 12 - 12}px`,
-                top: `${Math.floor(i / 3) * 14 - 14}px`,
-                zIndex: i,
-                transform: `translateZ(${i * 2}px) rotateX(${25 - i * 2}deg)`,
+                background:
+                  idx === 0
+                    ? 'radial-gradient(ellipse at 35% 30%, #fef08a 0%, #f59e0b 60%, #b45309 100%)'
+                    : 'linear-gradient(180deg, #fbbf24 0%, #d97706 70%, #78350f 100%)',
+                marginTop: idx === 0 ? 0 : -6,
+                zIndex: 5 - idx,
+                boxShadow:
+                  idx === 4
+                    ? '0 6px 12px rgba(0, 0, 0, 0.45)'
+                    : '0 2px 4px rgba(120, 53, 15, 0.3)',
               }}
             >
-              <div className="coin">
-                ₿
-              </div>
-            </motion.div>
+              {idx === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center text-amber-950 opacity-75">
+                  <CoinCrestIcon className="w-2.5 h-2.5" />
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>
 
-      {/* Treasury Counter - Neumorphic Pill */}
-      <div className="neu-convex px-6 py-2 rounded-full flex items-center gap-2.5 shadow-md">
-        <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
-        <span className="text-amber-800 font-black text-xs tracking-[0.2em] uppercase">
-          TREASURY
+      {/* Pill Badge matching Image 2: "Bank: 38 Coins" */}
+      <div className="px-3.5 py-1 rounded-full bg-black/60 backdrop-blur-sm border border-amber-400/40 shadow-lg flex items-center gap-1.5">
+        <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shadow-[0_0_6px_rgba(251,191,36,0.9)]" />
+        <span className="text-white font-extrabold text-[11px] sm:text-xs tracking-wide">
+          Bank: <span className="text-amber-300 font-black">{coinPile}</span> Coins
         </span>
-        <span className="text-amber-900 font-black text-base tabular-nums">{coinPile}</span>
       </div>
     </motion.div>
   );

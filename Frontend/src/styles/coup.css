@@ -1,434 +1,441 @@
-/* ═══════════════════════════════════════════════
-   COUP - Heavy Cream White Neumorphic Interface
-   Soft UI / Cream & Gold Aesthetics
-   ═══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════
+   COUP - 3D NEUMORPHIC TABLETOP BOARD GAME (CREAM LUXURY EDITION)
+   Clean Cream Palette / Soft 3D Neumorphism / Physical Tabletop Scene
+   ═══════════════════════════════════════════════════════════════════ */
 
 :root {
   /* Cream Neumorphic Palette */
-  --neu-bg: #ece7dc;             /* Main Warm Cream Background */
-  --neu-surface: #ece7dc;        /* Base Surface Color */
-  --neu-surface-light: #f7f3ea;  /* Top-left Highlight Gradient */
-  --neu-surface-dark: #dfd9cb;   /* Bottom-right Shadow Gradient */
+  --neu-bg: #f3eee5;
+  --neu-bg-gradient: radial-gradient(ellipse at 50% 25%, #fcfbf8 0%, #f4efe6 55%, #e8e2d5 100%);
+  --neu-surface: #f1ece2;
+  --neu-surface-elevated: #faf7f2;
+  --neu-surface-inset: #eae4d8;
 
-  /* Dual Shadows for #ece7dc */
-  --neu-shadow-dark: #c5bca9;    /* Soft Warm Shadow */
-  --neu-shadow-light: #ffffff;   /* Pure White Highlight */
+  /* Neumorphic Soft Dual Shadows */
+  --neu-shadow-light: #ffffff;
+  --neu-shadow-dark: rgba(185, 175, 160, 0.45);
+  --neu-shadow-dark-strong: rgba(160, 150, 135, 0.6);
 
-  /* Typography */
-  --text-primary: #2d2822;       /* Rich Dark Espresso Brown */
-  --text-secondary: #706758;     /* Soft Taupe */
-  --text-muted: #9e9483;         /* Light Muted Taupe */
+  /* Primary Extruded Drop Shadow */
+  --neu-drop: 6px 6px 14px var(--neu-shadow-dark), -6px -6px 14px var(--neu-shadow-light);
+  --neu-drop-sm: 3px 3px 8px var(--neu-shadow-dark), -3px -3px 8px var(--neu-shadow-light);
+  --neu-drop-lg: 10px 10px 24px var(--neu-shadow-dark), -10px -10px 24px var(--neu-shadow-light);
 
-  /* Gold & Accents */
-  --gold: #d97706;
-  --gold-light: #f59e0b;
-  --gold-dark: #b45309;
-  --gold-glow: rgba(217, 119, 6, 0.25);
+  /* Recessed / Pressed Inset Shadow */
+  --neu-inset: inset 3px 3px 6px var(--neu-shadow-dark), inset -3px -3px 6px var(--neu-shadow-light);
+  --neu-inset-sm: inset 2px 2px 4px var(--neu-shadow-dark), inset -2px -2px 4px var(--neu-shadow-light);
+  --neu-inset-lg: inset 5px 5px 12px var(--neu-shadow-dark), inset -5px -5px 12px var(--neu-shadow-light);
 
-  /* Role Badges */
-  --role-duke: #7c3aed;
-  --role-assassin: #dc2626;
-  --role-captain: #0284c7;
-  --role-ambassador: #059669;
-  --role-contessa: #db2777;
+  /* 3D Center Wooden Gaming Table */
+  --wood-table-rim: linear-gradient(145deg, #6d472c 0%, #4d301c 50%, #361f10 100%);
+  --wood-table-shadow: 0 20px 45px rgba(60, 40, 25, 0.35), 0 4px 12px rgba(0, 0, 0, 0.2);
 
-  /* Table Surface */
-  --table-bg: #e5ded0;
-  --table-felt: #dfd7c6;
-  --table-rim: #c9bea9;
-  --table-border: #b3a790;
+  /* Typography Colors */
+  --text-main: #2b2723;
+  --text-muted: #787165;
+  --text-subtle: #9c9485;
+
+  /* Game Accent Tints */
+  --color-gold: #f59e0b;
+  --color-gold-hover: #d97706;
+  --color-green: #10b981;
+  --color-blue: #0ea5e9;
+  --color-red: #ef4444;
+  --color-purple: #8b5cf6;
 }
 
-/* ─── Global Background Overrides ─── */
-body, #root {
-  background-color: var(--neu-bg) !important;
-  color: var(--text-primary);
-  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+/* ─── Typography & Base ─── */
+.font-coup {
+  font-family: 'Outfit', sans-serif !important;
+  font-weight: 900;
+  letter-spacing: 0.12em;
 }
 
-/* ─── Neumorphic Base Classes ─── */
+.font-serif-coup {
+  font-family: 'Cinzel', serif !important;
+  letter-spacing: 0.12em;
+  font-weight: 800;
+}
+
+/* ─── Cream 3D Scene Environment ─── */
+.coup-cream-room,
+.boardgame-room,
+.coup-dark-atmosphere {
+  background: var(--neu-bg-gradient);
+  min-height: 100vh;
+  min-width: 100vw;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text-main);
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ─── Neumorphic Core Utility Classes ─── */
 .neu-flat {
   background: var(--neu-surface);
-  box-shadow:
-    8px 8px 16px var(--neu-shadow-dark),
-    -8px -8px 16px var(--neu-shadow-light);
-  border-radius: 20px;
-}
-
-.neu-convex {
-  background: linear-gradient(145deg, var(--neu-surface-light), var(--neu-surface-dark));
-  box-shadow:
-    8px 8px 18px var(--neu-shadow-dark),
-    -8px -8px 18px var(--neu-shadow-light);
-  border-radius: 20px;
-}
-
-.neu-concave {
-  background: linear-gradient(145deg, var(--neu-surface-dark), var(--neu-surface-light));
-  box-shadow:
-    inset 6px 6px 12px var(--neu-shadow-dark),
-    inset -6px -6px 12px var(--neu-shadow-light);
-  border-radius: 20px;
-}
-
-.neu-pressed {
-  background: var(--neu-surface);
-  box-shadow:
-    inset 6px 6px 12px var(--neu-shadow-dark),
-    inset -6px -6px 12px var(--neu-shadow-light);
-  border-radius: 16px;
-}
-
-/* Extruded Neumorphic Card / Container */
-.neu-card {
-  background: linear-gradient(145deg, #f7f3ea, #e2dccf);
-  box-shadow:
-    10px 10px 20px var(--neu-shadow-dark),
-    -10px -10px 20px var(--neu-shadow-light);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-}
-
-/* ─── 3D Table Perspective ─── */
-.coup-table-container {
-  perspective: 1600px;
-  perspective-origin: 50% 55%;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background: radial-gradient(circle at 50% 45%, #f4f0e6 0%, #ece7dc 60%, #e0d9ca 100%);
-}
-
-.coup-table-surface {
-  transform-style: preserve-3d;
-  transform: rotateX(16deg) scale(0.96);
-  transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.coup-table-felt {
-  background: linear-gradient(145deg, #e9e3d5, #dbd4c4);
-  border: 8px solid var(--table-rim);
-  border-radius: 140px;
-  box-shadow:
-    16px 16px 36px var(--neu-shadow-dark),
-    -16px -16px 36px var(--neu-shadow-light),
-    inset 8px 8px 18px rgba(181, 171, 150, 0.4),
-    inset -8px -8px 18px rgba(255, 255, 255, 0.8);
-}
-
-/* Cream felt texture */
-.coup-table-felt::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8ad96' fill-opacity='0.12'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-/* ─── Card 3D Flip System ─── */
-.card-3d-container {
-  perspective: 800px;
-  transform-style: preserve-3d;
-}
-
-.card-3d-inner {
-  transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  transform-style: preserve-3d;
-  position: relative;
-}
-
-.card-3d-inner.flipped {
-  transform: rotateY(180deg);
-}
-
-/* ─── Card Neumorphic Styles ─── */
-.coup-card {
-  border-radius: 16px;
-  overflow: hidden;
-  position: relative;
-  background: linear-gradient(145deg, #faf7f0, #e6e0d3);
-  box-shadow:
-    6px 6px 14px var(--neu-shadow-dark),
-    -6px -6px 14px var(--neu-shadow-light);
-  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  border: 2px solid rgba(255, 255, 255, 0.8);
-}
-
-.coup-card:hover {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow:
-    10px 10px 22px var(--neu-shadow-dark),
-    -10px -10px 22px var(--neu-shadow-light);
-}
-
-.coup-card.selected {
-  border-color: var(--gold);
-  box-shadow:
-    0 0 0 3px var(--gold),
-    0 0 20px rgba(217, 119, 6, 0.35),
-    8px 8px 18px var(--neu-shadow-dark);
-}
-
-.coup-card.dead {
-  filter: grayscale(0.85) opacity(0.65);
-  box-shadow:
-    inset 4px 4px 8px var(--neu-shadow-dark),
-    inset -4px -4px 8px var(--neu-shadow-light);
-}
-
-/* Card shimmer effect */
-.card-shimmer {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 40%,
-    rgba(255, 255, 255, 0.4) 50%,
-    transparent 60%
-  );
-  animation: shimmer 4s ease-in-out infinite;
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-@keyframes shimmer {
-  0%, 100% { transform: translateX(-100%); }
-  50% { transform: translateX(100%); }
-}
-
-/* ─── Player Seat Neumorphic Panel ─── */
-.player-seat-panel {
-  background: linear-gradient(145deg, #f5f1e8, #e0d8c9);
-  border-radius: 24px;
-  box-shadow:
-    9px 9px 20px var(--neu-shadow-dark),
-    -9px -9px 20px var(--neu-shadow-light);
+  box-shadow: var(--neu-drop);
   border: 1px solid rgba(255, 255, 255, 0.8);
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  color: var(--text-primary);
 }
 
-.player-seat-panel.is-turn {
-  box-shadow:
-    0 0 0 3px var(--gold),
-    12px 12px 24px var(--neu-shadow-dark),
-    -12px -12px 24px var(--neu-shadow-light),
-    0 0 25px rgba(217, 119, 6, 0.2);
+.neu-flat-sm {
+  background: var(--neu-surface);
+  box-shadow: var(--neu-drop-sm);
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
-.player-seat-panel.eliminated {
-  opacity: 0.5;
-  filter: grayscale(0.5);
-  box-shadow:
-    inset 4px 4px 10px var(--neu-shadow-dark),
-    inset -4px -4px 10px var(--neu-shadow-light);
+.neu-flat-lg {
+  background: var(--neu-surface);
+  box-shadow: var(--neu-drop-lg);
+  border: 1px solid rgba(255, 255, 255, 0.9);
 }
 
-/* ─── 3D Gold Coin Stack ─── */
-.coin-stack {
+.neu-inset {
+  background: var(--neu-surface-inset);
+  box-shadow: var(--neu-inset);
+  border: 1px solid rgba(185, 175, 160, 0.2);
+}
+
+.neu-inset-sm {
+  background: var(--neu-surface-inset);
+  box-shadow: var(--neu-inset-sm);
+  border: 1px solid rgba(185, 175, 160, 0.2);
+}
+
+/* ─── Tactile Neumorphic Buttons ─── */
+.neu-btn {
+  background: var(--neu-surface);
+  box-shadow: var(--neu-drop-sm);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  color: var(--text-main);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.neu-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 4px 6px 14px var(--neu-shadow-dark), -4px -6px 14px var(--neu-shadow-light);
+  background: var(--neu-surface-elevated);
+}
+
+.neu-btn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: var(--neu-inset-sm);
+  background: var(--neu-surface-inset);
+}
+
+.neu-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+  background: rgba(220, 214, 204, 0.5);
+  border-color: rgba(200, 190, 175, 0.3);
+}
+
+/* ─── The Action Buttons (Inspired by Image 2) ─── */
+.neu-action-card {
+  background: var(--neu-surface);
+  box-shadow: var(--neu-drop-sm);
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
   position: relative;
-  width: 44px;
-  height: 44px;
+  text-align: center;
 }
 
-.coin {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 35%, #d97706 70%, #b45309 100%);
+.neu-action-card:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 5px 8px 16px var(--neu-shadow-dark), -5px -8px 16px var(--neu-shadow-light);
+  background: #ffffff;
+}
+
+.neu-action-card:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: var(--neu-inset-sm);
+}
+
+.neu-action-card:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  filter: grayscale(0.8);
+  box-shadow: none;
+  background: rgba(220, 215, 205, 0.4);
+}
+
+/* Action Tint Highlights */
+.neu-action-green {
+  border-color: rgba(16, 185, 129, 0.45) !important;
+}
+.neu-action-green:hover:not(:disabled) {
+  border-color: #10b981 !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25), var(--neu-drop-sm);
+}
+
+.neu-action-amber {
+  border-color: rgba(245, 158, 11, 0.45) !important;
+}
+.neu-action-amber:hover:not(:disabled) {
+  border-color: #f59e0b !important;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25), var(--neu-drop-sm);
+}
+
+.neu-action-red {
+  border-color: rgba(239, 68, 68, 0.45) !important;
+}
+.neu-action-red:hover:not(:disabled) {
+  border-color: #ef4444 !important;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25), var(--neu-drop-sm);
+}
+
+.neu-action-purple {
+  border-color: rgba(139, 92, 246, 0.45) !important;
+}
+.neu-action-purple:hover:not(:disabled) {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25), var(--neu-drop-sm);
+}
+
+/* The Grand COUP Button */
+.neu-action-coup {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.3), var(--neu-drop-sm) !important;
+}
+.neu-action-coup:hover:not(:disabled) {
+  background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%) !important;
+  transform: translateY(-4px) scale(1.04) !important;
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.45), var(--neu-drop-sm) !important;
+}
+
+/* ─── 3D Center Wooden Gaming Table ─── */
+.neu-wood-table {
+  background: var(--wood-table-rim);
+  border-radius: 9999px;
   box-shadow:
-    3px 3px 6px rgba(180, 83, 9, 0.3),
-    -2px -2px 4px rgba(255, 255, 255, 0.8),
-    inset 0 2px 4px rgba(255, 255, 255, 0.5),
-    inset 0 -2px 4px rgba(180, 83, 9, 0.4);
-  position: absolute;
-  border: 2px solid #b45309;
+    var(--wood-table-shadow),
+    inset 0 3px 6px rgba(255, 255, 255, 0.2),
+    inset 0 -5px 12px rgba(0, 0, 0, 0.6);
+  border: 4px solid #855434;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  font-weight: 900;
-  color: #78350f;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
-/* ─── Action Panel Neumorphic ─── */
-.action-bar {
-  background: linear-gradient(145deg, #f5f1e8, #e1d9ca);
-  border-radius: 28px;
+.neu-table-inner-felt {
+  background: #3a2213;
+  background: radial-gradient(ellipse at center, #52311b 0%, #3a2213 65%, #29170c 100%);
+  border-radius: 9999px;
+  position: absolute;
+  inset: 12px;
   box-shadow:
-    12px 12px 28px var(--neu-shadow-dark),
-    -12px -12px 28px var(--neu-shadow-light);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+    inset 0 0 40px rgba(0, 0, 0, 0.8),
+    0 0 8px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(212, 175, 55, 0.35);
 }
 
-.action-btn {
-  background: linear-gradient(145deg, #f7f4eb, #e2dccf);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 16px;
-  color: var(--text-primary);
-  font-weight: 800;
-  font-size: 12px;
-  letter-spacing: 0.05em;
-  padding: 12px 20px;
-  transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
-  box-shadow:
-    6px 6px 14px var(--neu-shadow-dark),
-    -6px -6px 14px var(--neu-shadow-light);
-  text-transform: uppercase;
-  cursor: pointer;
+/* ─── 3D Neumorphic Player Podiums (Image 2 style) ─── */
+.neu-player-podium {
+  background: var(--neu-surface);
+  box-shadow: 
+    0 8px 24px rgba(110, 90, 65, 0.28),
+    -3px -3px 10px rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
   position: relative;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.neu-player-podium.is-turn {
+  border-color: #f59e0b;
+  box-shadow:
+    0 0 0 3px rgba(245, 158, 11, 0.6),
+    0 12px 28px rgba(245, 158, 11, 0.35),
+    0 8px 20px rgba(110, 90, 65, 0.28);
+  transform: scale(1.06);
+}
+
+/* Avatar Ring */
+.neu-avatar-ring {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  box-shadow: var(--neu-drop-sm);
+  border: 2px solid #ffffff;
   overflow: hidden;
+  position: relative;
 }
 
-.action-btn:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow:
-    8px 8px 18px var(--neu-shadow-dark),
-    -8px -8px 18px var(--neu-shadow-light),
-    0 0 15px rgba(217, 119, 6, 0.15);
-  border-color: var(--gold-light);
-}
-
-.action-btn:active:not(:disabled) {
-  transform: translateY(1px);
-  box-shadow:
-    inset 4px 4px 8px var(--neu-shadow-dark),
-    inset -4px -4px 8px var(--neu-shadow-light);
-}
-
-.action-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  box-shadow:
-    inset 2px 2px 4px var(--neu-shadow-dark),
-    inset -2px -2px 4px var(--neu-shadow-light);
-}
-
-.action-btn.primary {
-  background: linear-gradient(145deg, #f59e0b, #d97706);
-  color: #ffffff;
-  border-color: #b45309;
+/* 3D Gold Coin Cylinder Stack */
+.neu-coin-stack {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--neu-surface-inset);
+  box-shadow: var(--neu-inset-sm);
+  border-radius: 99px;
+  padding: 2px 8px;
   font-weight: 900;
-  box-shadow:
-    6px 6px 14px rgba(180, 83, 9, 0.35),
-    -4px -4px 10px rgba(255, 255, 255, 0.8);
+  color: #854d0e;
+  font-size: 11px;
 }
 
-.action-btn.primary:hover:not(:disabled) {
-  background: linear-gradient(145deg, #fbbf24, #d97706);
-  box-shadow:
-    8px 8px 18px rgba(180, 83, 9, 0.45),
-    -4px -4px 10px rgba(255, 255, 255, 0.9);
+.neu-3d-coin {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fef08a 0%, #f59e0b 55%, #b45309 100%);
+  border: 1px solid #fef08a;
+  box-shadow: 0 2px 5px rgba(180, 83, 9, 0.4), inset 0 1px 1px #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.action-btn.danger {
-  background: linear-gradient(145deg, #ef4444, #dc2626);
-  color: #ffffff;
-  border-color: #b91c1c;
-  box-shadow:
-    6px 6px 14px rgba(185, 28, 28, 0.35),
-    -4px -4px 10px rgba(255, 255, 255, 0.8);
+/* ─── 3D Playing Cards ─── */
+.neu-card {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(140, 130, 115, 0.35), 0 2px 5px rgba(0, 0, 0, 0.08);
+  border: 2px solid #ffffff;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
 }
 
-.action-btn.block {
-  background: linear-gradient(145deg, #8b5cf6, #7c3aed);
-  color: #ffffff;
-  border-color: #6d28d9;
-  box-shadow:
-    6px 6px 14px rgba(109, 40, 217, 0.35),
-    -4px -4px 10px rgba(255, 255, 255, 0.8);
+.neu-card:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 14px 28px rgba(140, 130, 115, 0.45), 0 0 16px rgba(245, 158, 11, 0.35);
+  border-color: #fde68a;
 }
 
-/* ─── Game Log Panel ─── */
-.game-log-panel {
-  background: linear-gradient(145deg, #f5f1e8, #e0d8c9);
-  border-radius: 24px;
+.neu-card.selected {
+  border-color: #f59e0b;
   box-shadow:
-    10px 10px 24px var(--neu-shadow-dark),
-    -10px -10px 24px var(--neu-shadow-light);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+    0 0 0 3px #f59e0b,
+    0 16px 32px rgba(245, 158, 11, 0.4);
+  transform: translateY(-12px) scale(1.08);
 }
 
-.game-log-content {
-  background: linear-gradient(145deg, #dfd8c9, #f7f3ea);
-  box-shadow:
-    inset 4px 4px 8px var(--neu-shadow-dark),
-    inset -4px -4px 8px var(--neu-shadow-light);
-  border-radius: 16px;
+.neu-card.dead {
+  filter: grayscale(0.9) brightness(0.7);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  cursor: default;
+}
+.neu-card.dead:hover {
+  transform: none;
 }
 
-/* ─── Modal Overlay & Panel ─── */
+/* ─── Shims for Setup and Modals ─── */
+.glass-panel,
+.glass-panel-elevated {
+  background: var(--neu-surface) !important;
+  box-shadow: var(--neu-drop) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+  border-radius: 20px !important;
+  color: var(--text-main) !important;
+}
+
+.glass-panel-gold {
+  background: var(--neu-surface-elevated) !important;
+  border: 1.5px solid #f59e0b !important;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.2), var(--neu-drop-sm) !important;
+}
+
+.glass-inset {
+  background: var(--neu-surface-inset) !important;
+  box-shadow: var(--neu-inset) !important;
+  border: 1px solid rgba(185, 175, 160, 0.2) !important;
+  border-radius: 12px !important;
+}
+
+.glass-btn-primary {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid #fef08a !important;
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35) !important;
+  border-radius: 12px !important;
+  cursor: pointer;
+}
+
+.glass-btn-secondary {
+  background: var(--neu-surface) !important;
+  box-shadow: var(--neu-drop-sm) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  color: var(--text-main) !important;
+  border-radius: 12px !important;
+  cursor: pointer;
+}
+
+.glass-btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: #fff !important;
+  border: 1px solid rgba(254, 202, 202, 0.4) !important;
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3) !important;
+  border-radius: 12px !important;
+  cursor: pointer;
+}
+
 .coup-modal-overlay {
-  background: rgba(45, 40, 34, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(43, 39, 35, 0.45) !important;
+  backdrop-filter: blur(8px) !important;
 }
 
 .coup-modal-panel {
-  background: linear-gradient(145deg, #f7f3ea, #dfd8c9);
-  border-radius: 28px;
-  box-shadow:
-    16px 16px 36px var(--neu-shadow-dark),
-    -16px -16px 36px var(--neu-shadow-light),
-    0 20px 40px rgba(45, 40, 34, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  color: var(--text-primary);
+  background: var(--neu-surface-elevated) !important;
+  box-shadow: 0 25px 60px rgba(100, 90, 80, 0.35), var(--neu-drop-lg) !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 24px !important;
+  color: var(--text-main) !important;
 }
 
-/* ─── Turn Indicator ─── */
-.turn-indicator {
-  background: linear-gradient(145deg, #f7f3ea, #e2dccf);
-  border: 2px solid var(--gold-light);
-  border-radius: 99px;
-  box-shadow:
-    8px 8px 18px var(--neu-shadow-dark),
-    -8px -8px 18px var(--neu-shadow-light),
-    0 0 15px rgba(217, 119, 6, 0.2);
+.game-log-panel {
+  background: var(--neu-surface) !important;
+  box-shadow: var(--neu-drop) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+  border-radius: 16px !important;
+  color: var(--text-main) !important;
 }
 
-/* ─── Status Badges ─── */
-.status-badge {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 8px;
+.game-log-content {
+  background: var(--neu-surface-inset) !important;
+  box-shadow: var(--neu-inset-sm) !important;
+  border-radius: 10px !important;
 }
 
-.status-alive {
-  background: linear-gradient(145deg, #dcfce7, #bbf7d0);
-  color: #15803d;
-  box-shadow:
-    2px 2px 4px var(--neu-shadow-dark),
-    -2px -2px 4px var(--neu-shadow-light);
-  border: 1px solid #86efac;
+/* Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(180, 170, 155, 0.5) transparent;
 }
 
-.status-eliminated {
-  background: linear-gradient(145deg, #fee2e2, #fecaca);
-  color: #b91c1c;
-  box-shadow:
-    inset 2px 2px 4px rgba(185, 28, 28, 0.15);
-  border: 1px solid #fca5a5;
-}
-
-/* Scrollbar tweaks */
-.scrollbar-thin::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 5px;
+  height: 5px;
 }
 
-.scrollbar-thin::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: var(--neu-shadow-dark);
-  border-radius: 10px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background-color: #b3a790;
+::-webkit-scrollbar-thumb {
+  background-color: rgba(180, 170, 155, 0.5);
+  border-radius: 9999px;
 }

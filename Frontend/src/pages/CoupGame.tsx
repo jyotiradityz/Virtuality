@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { GameTable } from '../components/table/GameTable';
 import { LocalPlayerConsole } from '../components/panels/LocalPlayerConsole';
 import { GameLog } from '../components/panels/GameLog';
@@ -13,17 +14,36 @@ import { ExchangeModal } from '../components/modals/ExchangeModal';
 import { BLOCK_ROLES, ROLE_CLAIMS } from '../game/rules';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SocketTransport } from '../api/socketTransport';
+import { CoupSwordsIcon, DukeIcon } from '../components/shared/CoupIcons';
 import '../styles/coup.css';
 
 export const CoupGame: React.FC = () => {
-  const [inLobby, setInLobby] = useState(true);
-  const [gameMode, setGameMode] = useState<'MOCK' | 'SOCKET'>('MOCK');
-  const [botCount, setBotCount] = useState(3);
+  const navigate = useNavigate();
+  const { lobbyCode } = useParams<{ lobbyCode: string }>();
+  const [searchParams] = useSearchParams();
+  const queryName = searchParams.get('name') || '';
+  const queryMode = searchParams.get('mode');
+  const queryBots = parseInt(searchParams.get('bots') || '3');
+
+  const initialGameMode = queryMode === 'singleplayer' ? 'MOCK' : 'SOCKET';
+  const shouldSkipLobby = Boolean(lobbyCode || queryMode === 'singleplayer');
+
+  const [inLobby, setInLobby] = useState(!shouldSkipLobby);
+  const [gameMode, setGameMode] = useState<'MOCK' | 'SOCKET'>(initialGameMode);
+  const [botCount, setBotCount] = useState(queryBots);
   const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(null);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
   const { transport } = useGame(gameMode, botCount);
   const gameState = useGameStore((state) => state.gameState);
+
+  useEffect(() => {
+    if (gameMode === 'SOCKET' && lobbyCode && transport instanceof SocketTransport) {
+      transport.reconnectMatch(lobbyCode, queryName || 'Guest Player').catch((e) => {
+        console.error('Failed to attach match:', e);
+      });
+    }
+  }, [lobbyCode, queryName, gameMode, transport]);
 
   const localPlayer = gameState?.players.find((p) => p.isLocalPlayer);
 
@@ -94,51 +114,69 @@ export const CoupGame: React.FC = () => {
     transport.sendExchange(keptCardIds);
   };
 
-  if (inLobby && !gameState) {
-    if (roomInfo) {
-      return (
-        <div className="w-full h-screen flex items-center justify-center select-none" style={{ backgroundColor: '#ece7dc' }}>
-          <div className="coup-modal-panel p-8 max-w-md w-full space-y-5 text-center">
-            <h2 className="text-amber-900 text-2xl font-black tracking-widest uppercase">
-              ROOM: {roomInfo.roomCode}
-            </h2>
-            <div className="neu-pressed p-4 rounded-2xl space-y-2">
-              <p className="text-stone-600 text-xs font-bold uppercase tracking-wider mb-2">PLAYERS IN LOBBY ({roomInfo.players.length}/6)</p>
-              {roomInfo.players.map((p) => (
-                <div key={p.id} className="flex justify-between items-center text-sm font-black text-stone-800">
-                  <span>{p.name} {p.isHost && '👑'}</span>
-                  <span className="text-xs text-emerald-600">READY</span>
-                </div>
-              ))}
-            </div>
+  if (!gameState) {
+    if (inLobby) {
+      if (roomInfo) {
+        return (
+          <div className="boardgame-room w-full h-screen flex items-center justify-center p-4">
+            <div className="coup-modal-panel p-8 max-w-md w-full space-y-5 text-center">
+              <h2 className="text-amber-400 text-2xl font-black tracking-widest uppercase font-coup">
+                CHAMBER: {roomInfo.roomCode}
+              </h2>
+              <div className="glass-inset p-4 rounded-2xl space-y-2">
+                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+                  CONNECTED NOBLES ({roomInfo.players.length}/6)
+                </p>
+                {roomInfo.players.map((p) => (
+                  <div key={p.id} className="flex justify-between items-center text-sm font-bold text-white">
+                    <span>{p.name} {p.isHost && '(Host)'}</span>
+                    <span className="text-xs text-emerald-400 font-bold">READY</span>
+                  </div>
+                ))}
+              </div>
 
-            {roomInfo.hostId ? (
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleStartMultiplayerGame}
-                className="action-btn primary w-full py-3.5 font-black text-xs tracking-wider"
-              >
-                🚀 START MULTIPLAYER GAME
-              </motion.button>
-            ) : (
-              <p className="text-stone-500 text-xs font-bold animate-pulse">Waiting for host to start...</p>
-            )}
+              {roomInfo.hostId ? (
+                <button
+                  onClick={handleStartMultiplayerGame}
+                  className="glass-btn-primary w-full py-3.5 font-black text-xs tracking-wider uppercase font-coup cursor-pointer"
+                >
+                  Start Match Now
+                </button>
+              ) : (
+                <p className="text-slate-400 text-xs font-bold animate-pulse">
+                  Waiting for host to launch court match...
+                </p>
+              )}
+            </div>
           </div>
-        </div>
+        );
+      }
+
+      return (
+        <CoupLobby
+          onStartSinglePlayer={handleStartSinglePlayer}
+          onCreateRoom={handleCreateRoom}
+          onJoinRoom={handleJoinRoom}
+        />
       );
     }
 
     return (
-      <CoupLobby
-        onStartSinglePlayer={handleStartSinglePlayer}
-        onCreateRoom={handleCreateRoom}
-        onJoinRoom={handleJoinRoom}
-      />
+      <div className="coup-cream-room w-full h-screen flex flex-col items-center justify-center p-4">
+        <div className="w-14 h-14 rounded-2xl neu-flat flex items-center justify-center text-amber-600 mb-4 animate-pulse">
+          <CoupSwordsIcon className="w-7 h-7" />
+        </div>
+        <h2 className="text-stone-900 font-black text-xl tracking-wider uppercase text-center">
+          CONNECTING TO MATCH {lobbyCode ? `[${lobbyCode}]` : ''}...
+        </h2>
+        <p className="text-stone-500 text-xs font-semibold mt-2">
+          Dealing cards & coins...
+        </p>
+      </div>
     );
   }
 
-  // Derive Modals strictly from gameState phase & state
+  // Modals derivation
   const pendingAction = gameState?.pendingAction;
   const pendingLoseInfluence = gameState?.pendingLoseInfluence;
   const pendingExchange = gameState?.pendingExchange;
@@ -194,18 +232,74 @@ export const CoupGame: React.FC = () => {
     }
   }
 
-  return (
-    <div className="relative w-full h-screen overflow-hidden font-sans select-none" style={{ fontFamily: "'Outfit', sans-serif", backgroundColor: '#ece7dc' }}>
-      {/* Game Table - Full screen background */}
-      <GameTable
-        selectedCardId={selectedCardId}
-        onCardSelect={(cardId) => setSelectedCardId(cardId === selectedCardId ? null : cardId)}
-      />
+  const activeTurnPlayer = gameState?.players[gameState?.turnIndex || 0];
 
-      {/* Game Log - Bottom Left */}
+  return (
+    <div className="coup-cream-room relative w-full h-screen overflow-hidden flex flex-col justify-between">
+      
+      {/* ─── TOP BAR: BRAND LOGO, TURN BANNER & CONTROLS ─── */}
+      <header className="w-full px-4 sm:px-6 py-3 flex items-center justify-between z-30 shrink-0">
+        {/* Left: Coup Brand */}
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl neu-flat flex items-center justify-center text-amber-600 shadow-sm">
+            <CoupSwordsIcon className="w-5 h-5" />
+          </div>
+          <div>
+            <h1 className="font-black text-lg text-stone-900 tracking-wider uppercase leading-none">
+              COUP
+            </h1>
+            <span className="text-[9px] font-extrabold text-stone-500 uppercase tracking-widest block mt-0.5">
+              TABLETOP
+            </span>
+          </div>
+        </div>
+
+        {/* Center: Current Turn Pill (Matching Image 2) */}
+        <div className="neu-flat px-4 py-1.5 rounded-full flex items-center gap-2.5">
+          <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
+          <span className="text-stone-800 font-extrabold text-xs sm:text-sm tracking-wide">
+            {gameState?.phase === 'GAME_OVER'
+              ? 'VICTORY DECIDED'
+              : activeTurnPlayer?.isLocalPlayer
+              ? 'YOUR TURN'
+              : `CURRENT PLAYER: ${activeTurnPlayer?.name}`}
+          </span>
+          {gameState && gameState.phase !== 'GAME_OVER' && (
+            <span className="px-2 py-0.5 rounded-md neu-inset-sm text-[10px] font-black text-stone-600">
+              R{gameState.turnIndex + 1}
+            </span>
+          )}
+        </div>
+
+        {/* Right: Chamber Code & Leave */}
+        <div className="flex items-center gap-2.5">
+          {lobbyCode && (
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl neu-inset-sm text-xs font-mono font-black text-stone-700">
+              <span className="text-stone-400 text-[10px] uppercase font-sans">Room:</span>
+              <span>{lobbyCode}</span>
+            </div>
+          )}
+          <button
+            onClick={() => navigate('/coup')}
+            className="neu-btn px-3.5 py-1.5 rounded-xl text-xs font-extrabold text-stone-700 hover:text-stone-900 transition-all cursor-pointer"
+          >
+            Leave
+          </button>
+        </div>
+      </header>
+
+      {/* ─── MAIN ARENA: THE GRAND RACETRACK OVAL TABLE ─── */}
+      <main className="flex-grow w-full h-[calc(100vh-210px)] relative overflow-visible flex items-center justify-center">
+        <GameTable
+          selectedCardId={selectedCardId}
+          onCardSelect={(cardId) => setSelectedCardId(cardId === selectedCardId ? null : cardId)}
+        />
+      </main>
+
+      {/* ─── FLOATING COURT LOG DRAWER (Bottom-Left) ─── */}
       <GameLog entries={gameState?.gameLog || []} />
 
-      {/* Local Player Bottom Console (Action Menu + Influence Cards + Coins + Avatar) */}
+      {/* ─── LOCAL PLAYER CONSOLE & HAND DOCK (Bottom) ─── */}
       {localPlayer && (
         <LocalPlayerConsole
           player={localPlayer}
@@ -215,46 +309,7 @@ export const CoupGame: React.FC = () => {
         />
       )}
 
-      {/* Turn Status Bar - Top Center */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-none z-20"
-      >
-        <div className="turn-indicator px-6 py-2 flex items-center gap-3">
-          <motion.div
-            animate={{ scale: [1, 1.3, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-2.5 h-2.5 rounded-full bg-amber-500"
-          />
-          <span className="text-amber-900 text-xs font-black uppercase tracking-[0.25em]">
-            {gameState?.phase === 'GAME_OVER'
-              ? '🏆 GAME OVER'
-              : gameState?.players[gameState.turnIndex]?.isLocalPlayer
-              ? '⚔️ YOUR TURN'
-              : `${gameState?.players[gameState?.turnIndex || 0]?.name}'s Turn`}
-          </span>
-          {gameState && gameState.phase !== 'GAME_OVER' && (
-            <div className="neu-pressed px-2.5 py-0.5 rounded-md ml-1">
-              <span className="text-stone-600 text-[9px] font-black tracking-wider">
-                R{gameState.turnIndex + 1}
-              </span>
-            </div>
-          )}
-        </div>
-      </motion.div>
-
-      {/* Coup Title Watermark */}
-      <div className="absolute top-4 left-5 z-20 pointer-events-none">
-        <div className="flex items-center gap-2">
-          <span className="text-amber-800/20 font-black text-2xl tracking-[0.3em] uppercase" style={{ fontFamily: "'Cinzel', serif" }}>
-            COUP
-          </span>
-        </div>
-      </div>
-
-      {/* Modals */}
+      {/* ─── INTERACTIVE MODALS ─── */}
       <AnimatePresence>
         {showChallengeModal && (
           <ChallengeModal
@@ -295,55 +350,49 @@ export const CoupGame: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Game Over Banner */}
+      {/* ─── GAME OVER MODAL ─── */}
       <AnimatePresence>
         {gameState?.phase === 'GAME_OVER' && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 flex items-center justify-center coup-modal-overlay p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center coup-modal-overlay p-4"
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.7, y: 30 }}
+              initial={{ opacity: 0, scale: 0.7, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
-              className="coup-modal-panel p-8 max-w-sm w-full text-center space-y-5"
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="coup-modal-panel p-8 max-w-sm w-full text-center space-y-4"
             >
-              <motion.div
-                animate={{ rotate: [0, -5, 5, -5, 0], scale: [1, 1.1, 1] }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-                className="text-5xl mb-2"
-              >
-                👑
-              </motion.div>
+              <div className="w-16 h-16 rounded-2xl neu-flat flex items-center justify-center mx-auto text-amber-700 shadow-lg">
+                <DukeIcon className="w-8 h-8" />
+              </div>
 
-              <h1 className="text-amber-800 text-3xl font-black uppercase tracking-[0.2em]"
-                  style={{ fontFamily: "'Cinzel', serif" }}>
-                GAME OVER
+              <h1 className="text-stone-900 text-2xl font-black uppercase tracking-widest">
+                VICTORY DECIDED
               </h1>
 
-              <div className="neu-pressed px-6 py-3 rounded-2xl inline-block">
-                <p className="text-stone-900 text-lg font-black">
-                  🏆 {gameState.players.find((p) => p.id === gameState.winnerId)?.name}
+              <div className="neu-inset-sm px-6 py-3.5 rounded-xl inline-block w-full">
+                <p className="text-amber-900 text-lg font-black">
+                  {gameState.players.find((p) => p.id === gameState.winnerId)?.name}
                 </p>
-                <p className="text-amber-800 text-[10px] font-extrabold tracking-widest uppercase mt-1">
-                  IS VICTORIOUS
+                <p className="text-stone-500 text-[10px] font-extrabold tracking-widest uppercase mt-0.5">
+                  SEIZES THE COURT THRONE
                 </p>
               </div>
 
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <button
                 onClick={() => window.location.reload()}
-                className="action-btn primary w-full py-3 text-center font-black text-sm tracking-widest"
+                className="neu-btn neu-btn-gold w-full py-3.5 rounded-xl font-black text-xs tracking-widest uppercase cursor-pointer shadow-md"
               >
-                ⚔️ PLAY AGAIN
-              </motion.button>
+                Play New Match
+              </button>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
     </div>
   );
 };

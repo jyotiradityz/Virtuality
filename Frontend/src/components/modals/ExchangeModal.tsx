@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { CardState } from '../../types/game';
 import { InfluenceCard } from '../shared/InfluenceCard';
+import { AmbassadorIcon } from '../shared/CoupIcons';
 
 interface ExchangeModalProps {
   activeCards: CardState[];
@@ -31,32 +32,32 @@ export const ExchangeModal: React.FC<ExchangeModalProps> = ({
   const isComplete = selectedIds.length === requiredCount;
 
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center coup-modal-overlay select-none p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center coup-modal-overlay select-none p-4">
       <motion.div
-        initial={{ opacity: 0, scale: 0.85, y: 20 }}
+        initial={{ opacity: 0, scale: 0.9, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-        className="coup-modal-panel p-6 max-w-lg w-full text-center space-y-5"
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        className="coup-modal-panel p-6 max-w-lg w-full text-center space-y-4"
       >
         {/* Badge */}
         <div className="inline-block">
-          <div className="neu-pressed px-4 py-1.5 rounded-full">
-            <span className="text-emerald-800 text-[10px] font-black tracking-[0.2em] uppercase">
-              📜 AMBASSADOR EXCHANGE
+          <div className="neu-inset-sm px-3.5 py-1 rounded-full">
+            <span className="text-emerald-800 text-[10px] font-black tracking-widest uppercase flex items-center gap-1.5">
+              <AmbassadorIcon className="w-3.5 h-3.5" />
+              Ambassador Exchange
             </span>
           </div>
         </div>
 
-        <h2 className="text-stone-900 text-xl font-black">
-          Choose {requiredCount} Card{requiredCount > 1 ? 's' : ''} to Keep
+        <h2 className="text-stone-900 text-lg sm:text-xl font-black">
+          Retain {requiredCount} Influence Card{requiredCount > 1 ? 's' : ''}
         </h2>
-        <p className="text-stone-600 text-xs font-medium">
-          Select {requiredCount} card{requiredCount > 1 ? 's' : ''} to keep.
-          The rest return to the deck.
+        <p className="text-stone-600 text-xs">
+          Select {requiredCount} card{requiredCount > 1 ? 's' : ''} to keep in your court hand. Unselected cards return to the Court Deck.
         </p>
 
-        {/* Cards */}
-        <div className="flex justify-center gap-3 py-2 flex-wrap">
+        {/* Cards Pool */}
+        <div className="flex justify-center gap-2.5 sm:gap-3 py-3 flex-wrap">
           {pool.map((card) => {
             const isSelected = selectedIds.includes(card.id);
             return (
@@ -72,19 +73,17 @@ export const ExchangeModal: React.FC<ExchangeModalProps> = ({
           })}
         </div>
 
-        <motion.button
-          whileHover={isComplete ? { scale: 1.03 } : {}}
-          whileTap={isComplete ? { scale: 0.97 } : {}}
+        <button
           disabled={!isComplete}
           onClick={() => isComplete && onConfirm(selectedIds)}
-          className={`action-btn w-full py-3 text-center font-black ${
+          className={`w-full py-3.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all cursor-pointer ${
             isComplete
-              ? 'primary'
-              : 'opacity-40 cursor-not-allowed text-stone-500'
+              ? 'neu-btn bg-emerald-600 hover:bg-emerald-700 text-white shadow-md'
+              : 'opacity-40 cursor-not-allowed neu-inset-sm text-stone-400'
           }`}
         >
-          Confirm Exchange ({selectedIds.length} / {requiredCount})
-        </motion.button>
+          Confirm Retention ({selectedIds.length} / {requiredCount})
+        </button>
       </motion.div>
     </div>
   );

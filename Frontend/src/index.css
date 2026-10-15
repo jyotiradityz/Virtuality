@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Outfit:wght@400;600;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -9,58 +9,20 @@
   --color-text: var(--color-text);
   --color-accent: var(--color-accent);
   --font-sans: 'Outfit', sans-serif;
-  --font-medieval: 'Outfit', sans-serif;
+  --font-medieval: 'Cinzel', serif;
+  --font-coup: 'Cinzel', serif;
 }
 
 @layer base {
 
-  /* Default Platform Theme (Modern Dark/Glassmorphism) */
+  /* Default Platform Theme */
   :root {
     --color-primary: #6366f1;
-    /* Indigo */
     --color-secondary: #8b5cf6;
-    /* Violet */
-    --color-background: #090d16;
-    /* Deep Dark Space */
-    --color-surface: rgba(17, 24, 39, 0.6);
-    /* Translucent dark */
-    --color-text: #f8fafc;
-    /* Slate 50 */
-    --color-accent: #00f2fe;
-    /* Neon Cyan */
-  }
-
-  /* Starry Board Theme: Deep blue-black board background, translucent dark panels, gold highlights */
-  .theme-hexo {
-    --color-primary: #6366f1;
-    /* Indigo */
-    --color-secondary: #f59e0b;
-    /* Amber */
-    --color-background: #090d16;
-    /* Deep obsidian black */
-    --color-surface: rgba(15, 23, 42, 0.6);
-    /* Translucent slate-900 glass */
-    --color-text: #f8fafc;
-    /* Slate 50 */
-    --color-accent: #3b82f6;
-    /* Blue */
-    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
-  }
-
-  /* Mafia Theme (Dark/Gritty/Noir/Neon Red) */
-  .theme-mafia {
-    --color-primary: #e11d48;
-    /* Crimson Rose 600 */
-    --color-secondary: #9f1239;
-    /* Dark Blood Rose 800 */
-    --color-background: #030303;
-    /* Pure Black */
-    --color-surface: rgba(17, 17, 17, 0.7);
-    /* Gritty charcoal glass */
-    --color-text: #e5e5e5;
-    /* Neutral Light */
-    --color-accent: #f43f5e;
-    /* Rose Neon */
+    --color-background: #ece7dc;
+    --color-surface: rgba(236, 231, 220, 0.9);
+    --color-text: #2d2822;
+    --color-accent: #d97706;
   }
 
   body {
@@ -76,13 +38,24 @@
   }
 }
 
+/* Original Coup Title Font Helper */
+.font-coup {
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.15em;
+  font-weight: 800;
+}
+
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
 /* Custom styles for glowing details */
 .glow-primary {
   box-shadow: 0 0 20px rgba(99, 102, 241, 0.35);
 }
 
 .glow-accent {
-  box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+  box-shadow: 0 0 25px rgba(217, 119, 6, 0.4);
 }
 
 /* Glassmorphism utility */
@@ -90,130 +63,7 @@
   background: var(--color-surface);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.theme-hexo .glass {
-  border: 1px solid rgba(234, 88, 12, 0.15);
-}
-
-.theme-mafia .glass {
-  border: 1px solid rgba(225, 29, 72, 0.15);
-}
-
-/* Animated Multi-color border gradient representing Cowboy / Wooden themes */
-@keyframes border-glow-catan {
-  0% {
-    border-color: #78350f;
-  }
-
-  /* Burnt Amber */
-  25% {
-    border-color: #b45309;
-  }
-
-  /* Saddle Orange */
-  50% {
-    border-color: #451a03;
-  }
-
-  /* Espresso */
-  75% {
-    border-color: #d97706;
-  }
-
-  /* Brass / Gold */
-  100% {
-    border-color: #5c3a21;
-  }
-
-  /* Dark wood */
-}
-
-.catan-border {
-  animation: border-glow-catan 10s infinite alternate ease-in-out;
-}
-
-/* Wood-grained or Board-game feel card border */
-.board-game-panel {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.4);
-  background-color: #0c1220;
-}
-
-/* Medieval Typography helper */
-.font-medieval {
-  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
-}
-
-/* Medieval Parchment style */
-.medieval-parchment {
-  background-color: #0c1220;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5), 0 4px 6px rgba(0, 0, 0, 0.3);
-  color: #f1f5f9;
-}
-
-/* Medieval Wood frame */
-.medieval-wood {
-  background-color: #0c1220;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.5), 0 8px 16px rgba(0, 0, 0, 0.4);
-}
-
-/* Medieval Gold frame */
-.medieval-gold-frame {
-  border: 2px solid #d4af37;
-  box-shadow: 0 0 8px rgba(212, 175, 55, 0.25), inset 0 0 8px rgba(212, 175, 55, 0.15);
-}
-
-/* 3D card layout hover highlights */
-.medieval-3d-card {
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 4px 0 #0d121d, 0 6px 10px rgba(0, 0, 0, 0.2);
-  position: relative;
-  top: 0;
-}
-
-.medieval-3d-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 0 #0d121d, 0 10px 15px rgba(0, 0, 0, 0.3);
-}
-
-.medieval-3d-card:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 #0d121d, 0 4px 6px rgba(0, 0, 0, 0.15);
-}
-
-/* Resource specific glowing cards */
-.glow-wood {
-  box-shadow: 0 0 20px rgba(21, 128, 61, 0.3);
-}
-
-.glow-sheep {
-  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
-}
-
-.glow-brick {
-  box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
-}
-
-.glow-wheat {
-  box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
-}
-
-.glow-ore {
-  box-shadow: 0 0 20px rgba(100, 116, 139, 0.3);
-}
-
-/* Full screen overlay border */
-.catan-screen-border {
-  position: fixed;
-  inset: 0;
-  border: 10px solid #8c6239;
-  pointer-events: none;
-  z-index: 9999;
-  animation: border-glow-catan 8s infinite alternate ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 /* Hide scrollbar but keep scroll */
@@ -236,10 +86,10 @@
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(180, 83, 9, 0.25);
   border-radius: 4px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(180, 83, 9, 0.5);
 }

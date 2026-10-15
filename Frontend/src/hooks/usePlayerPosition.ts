@@ -1,17 +1,41 @@
 import type { Player } from '../types/game';
 
 export interface Position {
-  x: number;
-  y: number;
+  x: number; // Percentage offset from center (-50 to +50)
+  y: number; // Percentage offset from center (-50 to +50)
 }
 
-// Seat positions for OPPONENTS around the top & sides of the table
-const OPPONENT_COORDINATES: Record<number, Position> = {
-  0: { x: -340, y: -20 },   // Left
-  1: { x: -200, y: -180 },  // Top Left
-  2: { x: 0, y: -200 },     // Top Center
-  3: { x: 200, y: -180 },   // Top Right
-  4: { x: 340, y: -20 },    // Right
+// Seat positions for OPPONENTS placed on the SIDES & PERIMETER of the board (NOT inside the table)
+// Directly matching Image 2 where each player seat is an extruded cream podium docked around the wooden rim:
+const OPPONENT_COORDINATES: Record<number, Position[]> = {
+  // 1 opponent (heads up): Top center side
+  1: [{ x: 0, y: -62 }],
+  // 2 opponents: Top-left and Top-right sides
+  2: [
+    { x: -30, y: -60 },
+    { x: 30, y: -60 },
+  ],
+  // 3 opponents: Far-left wing, Top center side, Far-right wing
+  3: [
+    { x: -55, y: -20 }, // Left wing
+    { x: 0, y: -62 },   // Top center side
+    { x: 55, y: -20 },  // Right wing
+  ],
+  // 4 opponents: Far-left wing, Top-left side, Top-right side, Far-right wing
+  4: [
+    { x: -55, y: -20 }, // Far-left wing
+    { x: -28, y: -60 }, // Top-left side
+    { x: 28, y: -60 },  // Top-right side
+    { x: 55, y: -20 },  // Far-right wing
+  ],
+  // 5 opponents (6 players match - standard Coup max):
+  5: [
+    { x: -55, y: -20 }, // Far-left wing (elevated above action tray, like Sophie in Image 2)
+    { x: -28, y: -60 }, // Top-left side (like Liam in Image 2)
+    { x: 0, y: -62 },   // Top-center side (like Chloe in Image 2)
+    { x: 28, y: -60 },  // Top-right side (like Ben in Image 2)
+    { x: 55, y: -20 },  // Far-right wing (elevated above action tray, like Noah in Image 2)
+  ],
 };
 
 export function calculatePlayerPositions(players: Player[]): (Player & { position: Position })[] {
@@ -19,21 +43,8 @@ export function calculatePlayerPositions(players: Player[]): (Player & { positio
   if (total === 0) return [];
 
   const opponents = players.filter((p) => !p.isLocalPlayer);
-  const oppCount = opponents.length;
-
-  let oppPositions: Position[] = [];
-
-  if (oppCount === 1) {
-    oppPositions = [OPPONENT_COORDINATES[2]];
-  } else if (oppCount === 2) {
-    oppPositions = [OPPONENT_COORDINATES[1], OPPONENT_COORDINATES[3]];
-  } else if (oppCount === 3) {
-    oppPositions = [OPPONENT_COORDINATES[0], OPPONENT_COORDINATES[2], OPPONENT_COORDINATES[4]];
-  } else if (oppCount === 4) {
-    oppPositions = [OPPONENT_COORDINATES[0], OPPONENT_COORDINATES[1], OPPONENT_COORDINATES[3], OPPONENT_COORDINATES[4]];
-  } else {
-    oppPositions = [OPPONENT_COORDINATES[0], OPPONENT_COORDINATES[1], OPPONENT_COORDINATES[2], OPPONENT_COORDINATES[3], OPPONENT_COORDINATES[4]];
-  }
+  const oppCount = Math.min(opponents.length, 5);
+  const oppPositions = OPPONENT_COORDINATES[oppCount] || OPPONENT_COORDINATES[3];
 
   return players.map((player) => {
     if (player.isLocalPlayer) {
@@ -44,7 +55,7 @@ export function calculatePlayerPositions(players: Player[]): (Player & { positio
     }
 
     const oppIdx = opponents.findIndex((o) => o.id === player.id);
-    const pos = oppPositions[oppIdx] || { x: 0, y: -180 };
+    const pos = oppPositions[oppIdx] || { x: 0, y: -32 };
     return {
       ...player,
       position: pos,
