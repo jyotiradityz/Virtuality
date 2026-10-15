@@ -1,8 +1,11 @@
 # State: Virtuality Backend-Frontend Interaction
  
--**Current Phase:** Phase 6 (Gameplay Integrity, Bot Challenge Timing, Fast Room Creation & E2E Validation)
--**Phase Status:** Complete
+-**Current Phase:** Phase 7 (3D World Foundation: R3F Canvas, Seat Layout & Turn Camera)
+-**Phase Status:** Planned (07-01 ready for execution)
 -**Completed Plans:** 01-01, 02-01, 03-01, 04-01, 05-01, 06-01
+
+## Next Up
+- Execute `07-01`: isolated `/coup/3d` R3F sandbox (placeholder table at y=16, seat cubes for 2–6 players, turn camera glide + Free Orbit, 2D/3D toggle). 2D setup stays untouched.
 
 ## Recent Progress
 - **3D Glassmorphism Design Overhaul**:

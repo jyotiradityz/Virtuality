@@ -65,6 +65,7 @@ Plans:
 **Plans**: 1 plan
 
 - [ ] **Phase 5: 3D Glassmorphism Overhaul, Real Multiplayer Mobile Readiness & Mock Data Removal** - Complete visual transformation to dark 3D glassmorphism, removal of all mock data and fake delays, elimination of tacky emojis in favor of crisp SVG icons, and full mobile multi-phone responsiveness.
+- [ ] **Phase 7: 3D World Foundation (R3F Canvas, Seat Layout & Turn Camera)** - Isolated `/coup/3d` React Three Fiber sandbox with placeholder table, seat cubes for 2–6 players, and a camera that glides to the active player's seat. 2D untouched.
 
 ## Phase Details
 
@@ -154,6 +155,26 @@ Plans:
 Plans:
 - [x] 06-01: Fix bot challenge windows, optimize room creation speed, clean lobby indicators, add test player controls, and execute full E2E test suite.
 
+### Phase 7: 3D World Foundation (R3F Canvas, Seat Layout & Turn Camera)
+**Goal**: Stand up a Three.js / React Three Fiber 3D experience next to the 2D UI. Phase 7 is a test sandbox only: a canvas, a placeholder table (top at y=16, corners (±16, 16, ±16), converted from Blender Z-up), one cube per player seated for 2–6 players, and a turn camera that glides around the table to the active seat, with a Free Orbit debug mode and a 2D/3D toggle.
+**Depends on**: Phase 6
+**Requirements**: REQ-16, REQ-17, REQ-18, REQ-19
+**Success Criteria**:
+  1. `/coup/3d` renders an R3F canvas with a floor, a table placeholder whose tabletop is exactly y=16 spanning x,z ∈ [-16,16], and seat cubes.
+  2. Seats are spaced 180°/120°/90°/72°/60° for 2/3/4/5/6 players, outside the square table edge, facing the center.
+  3. Changing turn glides the camera along the shortest arc to behind and above the active seat, looking at (0,16,0). Free Orbit toggles drag control.
+  4. 2D/3D toggle with a persisted preference. The route is lazy-loaded (separate chunk). No existing 2D file is modified except one route line in `App.tsx`.
+**Plans**: 1 plan
+
+Plans:
+- [ ] 07-01: Install R3F, build seat/camera layout math, placeholder scene, turn camera rig, sandbox HUD + 2D/3D toggle, lazy `/coup/3d` route, browser verification.
+
+### Future 3D Phases (outline, to be planned after Phase 7 sign-off)
+- **Phase 8: Low-Poly Model Pipeline: Room, Table, Chair + Person**: Replace the placeholders with the user's GLB models. Add an asset optimisation pipeline (`gltf-transform` meshopt/Draco, WebP/KTX2 textures) with a strict per-model size budget, load with `useGLTF` and preload.
+- **Phase 9: Bind 3D Scene to Live Game State**: Drive seats, names, alive/dead and the turn camera from `useGameStore` (`players`, `turnIndex`, `isLocalPlayer`) for both MOCK and SOCKET transports. Add the 2D/3D toggle inside `CoupGame`.
+- **Phase 10: 3D Cards & Coins**: Card and coin GLBs (instanced), hand placement per seat, reveal/flip and coin transfer animations.
+- **Phase 11: 3D HUD & Interaction Layer**: Modern overlay UI over the canvas (action console, challenge/block/exchange modals, log), click-to-target players in 3D, mobile tuning and performance (`frameloop="demand"`, adaptive DPR).
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -164,4 +185,5 @@ Plans:
 | 4. Verification & Validation | 1/1 | Complete | 2026-10-11 |
 | 5. 3D Glassmorphism & Multi-Phone UI | 1/1 | Complete | 2026-10-11 |
 | 6. Gameplay Integrity & E2E Validation | 1/1 | Complete | 2026-10-12 |
+| 7. 3D World Foundation (R3F) | 0/1 | Planned | - |
 
